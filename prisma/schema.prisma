@@ -1,0 +1,404 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== SERVICES ====================
+
+model Service {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  content     String   // Rich content for service page
+  icon        String?  // Icon name or URL
+  imageUrl    String?
+  features    String   // JSON array of features
+  techStack   String?  // JSON array of technologies
+  process     String?  // JSON array of process steps
+  pricing     String?  // Pricing information
+  faqs        String?  // JSON array of FAQs
+  featured    Boolean  @default(false)
+  displayOrder Int     @default(0)
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  caseStudies CaseStudy[]
+  orders      ServiceOrder[]
+}
+
+// ==================== CASE STUDIES / PORTFOLIO ====================
+
+model CaseStudy {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  clientName      String
+  industry        String?
+  projectUrl      String?
+  githubUrl       String?
+  thumbnailUrl    String?
+  heroImage       String?
+
+  // Content sections
+  overview        String
+  problem         String
+  solution        String
+  process         String   // JSON array of process steps
+  results         String   // JSON array of results/metrics
+  techStack       String   // JSON array of technologies used
+  screenshots     String?  // JSON array of image URLs
+
+  // Metadata
+  featured        Boolean  @default(false)
+  displayOrder    Int     @default(0)
+  published       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  serviceId       String?
+  service         Service? @relation(fields: [serviceId], references: [id])
+
+  tagJoins        CaseStudyTagJoin[]
+}
+
+model CaseStudyTag {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  slug        String      @unique
+  caseStudyJoins CaseStudyTagJoin[]
+  createdAt   DateTime    @default(now())
+}
+
+model CaseStudyTagJoin {
+  id         String     @id @default(cuid())
+  caseStudyId String
+  tagId      String
+  caseStudy  CaseStudy @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+  tag        CaseStudyTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([caseStudyId, tagId])
+}
+
+// ==================== BLOG ====================
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  excerpt     String?
+  content     String   // Full blog content (markdown or HTML)
+  coverImage  String?
+  author      String   // Author name
+  readTime    Int?     // Reading time in minutes
+  views       Int      @default(0)
+  sharePlacement String @default("sidebar") // hero, sidebar, after-excerpt, after-content
+  featured    Boolean  @default(false)
+  published   Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  categoryId  String?
+  category    BlogCategory? @relation(fields: [categoryId], references: [id])
+  tagJoins    BlogPostTagJoin[]
+}
+
+model BlogCategory {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  slug      String     @unique
+  description String?
+  blogPosts BlogPost[]
+  createdAt DateTime   @default(now())
+}
+
+model BlogPostTag {
+  id       String            @id @default(cuid())
+  name     String            @unique
+  slug     String            @unique
+  tagJoins BlogPostTagJoin[]
+  createdAt DateTime          @default(now())
+}
+
+model BlogPostTagJoin {
+  id        String   @id @default(cuid())
+  postId    String
+  tagId     String
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag       BlogPostTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, tagId])
+}
+
+// ==================== FAQ ====================
+
+model FAQ {
+  id         String   @id @default(cuid())
+  question   String
+  answer     String
+  displayOrder Int    @default(0)
+  published  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  categoryId String?
+  category   FAQCategory? @relation(fields: [categoryId], references: [id])
+}
+
+model FAQCategory {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  description String?
+  faqs      FAQ[]
+  createdAt DateTime @default(now())
+}
+
+// ==================== TESTIMONIALS ====================
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  name        String
+  role        String?  // Job title
+  company     String?
+  content     String   // Testimonial text
+  avatarUrl   String?
+  rating      Int?     // 1-5 stars
+  featured    Boolean  @default(false)
+  displayOrder Int     @default(0)
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==================== TEAM MEMBERS ====================
+
+model TeamMember {
+  id          String   @id @default(cuid())
+  name        String
+  role        String   // Job title
+  bio         String?  // Short bio
+  imageUrl    String?
+  linkedinUrl String?
+  twitterUrl  String?
+  githubUrl   String?
+  email       String?
+  featured    Boolean  @default(false)
+  displayOrder Int     @default(0)
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==================== CLIENTS / BRANDS ====================
+
+model Client {
+  id          String   @id @default(cuid())
+  name        String
+  logoUrl     String?
+  websiteUrl  String?
+  featured    Boolean  @default(false)
+  displayOrder Int     @default(0)
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==================== PRICING ====================
+
+model PricingPackage {
+  id          String   @id @default(cuid())
+  name        String   // Package name (e.g., "Starter", "Pro", "Enterprise")
+  description String?
+  price       String   // Price text (e.g., "$999/month")
+  currency    String?  @default("USD")
+  features    String   // JSON array of features
+  popular     Boolean  @default(false)
+  displayOrder Int     @default(0)
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==================== CONTACT SUBMISSIONS ====================
+
+model ContactSubmission {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  company     String?
+  subject     String?
+  message     String
+  source      String?  // Where the form was submitted from
+  status      String   @default("new") // new, contacted, converted, closed
+  notes       String?  // Internal notes
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==================== SITE CONTENT ====================
+
+model SiteContent {
+  id          String   @id @default(cuid())
+  key         String   @unique // e.g., "hero-title", "home-cta-text"
+  value       String   // Content value
+  type        String   @default("text") // text, html, json, image
+  section     String   // e.g., "home-hero", "about-mission"
+  description String?  // For admin reference
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==================== NEWSLETTER ====================
+
+model NewsletterSubscription {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==================== STATS / ACHIEVEMENTS ====================
+
+model Stat {
+  id          String   @id @default(cuid())
+  label       String   // e.g., "Projects Completed"
+  value       String   // e.g., "150+"
+  description String?
+  displayOrder Int     @default(0)
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==================== CERTIFICATIONS / PARTNERSHIPS ====================
+
+model Certification {
+  id          String   @id @default(cuid())
+  name        String
+  issuer      String?
+  imageUrl    String?
+  certificateUrl String?
+  displayOrder Int     @default(0)
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==================== APP SETTINGS (AI KEYS, CONFIG) ====================
+
+model AppSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  type        String   @default("text") // text, secret, json
+  category    String   @default("general") // general, ai, social, security
+  description String?
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+}
+
+// ==================== SOCIAL MEDIA ACCOUNTS ====================
+
+model SocialAccount {
+  id           String   @id @default(cuid())
+  platform     String   // twitter, linkedin, facebook, instagram, tiktok, mastodon, generic-webhook
+  name         String   // Display name
+  handle       String?
+  enabled      Boolean  @default(true)
+  config       String?  // JSON: credentials, webhook URL, endpoint, etc.
+  published    Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  scheduledPosts ScheduledPost[]
+}
+
+// ==================== SCHEDULED SOCIAL POSTS ====================
+
+model ScheduledPost {
+  id            String   @id @default(cuid())
+  title         String
+  content       String   // final content to publish
+  originalPrompt String?
+  topics        String?  // JSON array of topics/keywords for AI
+  platform      String   // target platform
+  accountId     String?
+  account       SocialAccount? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  link          String?
+  imageUrl      String?
+  hashtags      String?  // JSON array
+  scheduledFor  DateTime
+  status        String   @default("scheduled") // scheduled, processing, published, failed, cancelled
+  aiEnabled     Boolean  @default(false)
+  aiModel       String?
+  aiProvider    String?
+  publishedAt   DateTime?
+  error         String?
+  sourcePostId  String?  // optional link to a blog post
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// ==================== SERVICE ORDERS / PROJECT ENGAGEMENT ====================
+
+model ServiceOrder {
+  id                String   @id @default(cuid())
+  orderNumber       String   @unique // human friendly ref e.g. UF-2026-0001
+  serviceId         String?
+  service           Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  serviceTitle      String   // snapshot of service name for clarity
+  name              String
+  email             String
+  phone             String?
+  company           String?
+  budget            String?
+  details           String   // project details / materials
+  attachments       String?  // JSON array of extra file URLs
+  status            String   @default("pending") // pending, paid, processing, completed, rejected, cancelled
+  paymentStatus     String   @default("unpaid") // unpaid, pending, paid, refunded
+  adminNotes        String?
+  adminMessage      String?  // message shown to client after approval
+  receiptFileName   String?
+  receiptUrl        String?
+  paymentMethod     String?  // bank_receipt, card
+  amountPaid        String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  payments  OrderPayment[]
+}
+
+model OrderPayment {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       ServiceOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method      String   @default("bank_receipt") // bank_receipt, card
+  amount      String?
+  receiptUrl  String?
+  receiptName String?
+  status      String   @default("pending") // pending, approved, rejected
+  reference   String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==================== BANK ACCOUNT DETAILS (global settings) ====================
+// Stored via AppSetting keys under category "bank" — e.g. bank_account_name,
+// bank_account_number, bank_iban, bank_swift, bank_beneficiary, bank_address.
+// Managed from Admin → Settings.
