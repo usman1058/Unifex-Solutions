@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { ChevronDown, Layers3, MoveRight, ShieldCheck, Sparkles } from 'lucide-react'
+import { ChevronDown, Layers, MoveRight, ShieldCheck, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 
 interface ServiceDetailEnhancementsProps {

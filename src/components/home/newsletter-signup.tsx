@@ -1,17 +1,36 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowUpRight, Mail, Sparkles } from 'lucide-react'
+import { ArrowUpRight, Loader2, Mail, Sparkles } from 'lucide-react'
 import { FormEvent, useState } from 'react'
 
 export default function NewsletterSignup() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (!email.trim()) return
-    setSubmitted(true)
+    if (!email.trim() || loading) return
+    setError('')
+    setLoading(true)
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const data = await response.json()
+      if (!response.ok || !data.success) {
+        throw new Error(data.error?.message || 'Subscription failed.')
+      }
+      setSubmitted(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

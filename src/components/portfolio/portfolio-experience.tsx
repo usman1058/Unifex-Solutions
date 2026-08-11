@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowUpRight, Layers3, MoveRight, Sparkles } from 'lucide-react'
+import { ArrowUpRight, Layers, MoveRight, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 
 interface Project { id: string; slug: string; title: string; clientName: string; industry: string | null; thumbnailUrl: string | null; overview: string }

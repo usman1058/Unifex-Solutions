@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowUpRight, Activity, Layers3, ShieldCheck, Users } from 'lucide-react'
+import { ArrowUpRight, Activity, Layers, ShieldCheck, Users } from 'lucide-react'
 import { useState } from 'react'
 import { AnimatedCounter } from '@/components/ui/motion-wrapper'
 
@@ -11,7 +11,7 @@ type Metric = {
   label: string
 }
 
-const icons = [Activity, Users, Layers3, ShieldCheck]
+const icons = [Activity, Users, Layers, ShieldCheck]
 
 export default function MetricsSection({ stats }: { stats: Metric[] }) {
   const reduceMotion = useReducedMotion()
