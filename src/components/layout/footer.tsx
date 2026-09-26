@@ -75,6 +75,12 @@ export default function Footer() {
             </Link>
             <Link
               className="text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
+              href="/cookies"
+            >
+              COOKIE POLICY
+            </Link>
+            <Link
+              className="text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
               href="/faq"
             >
               FAQ

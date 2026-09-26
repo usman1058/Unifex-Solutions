@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { MouseFollower } from "@/components/ui/mouse-follower";
 import AmbientCursorGlow from '@/components/ui/ambient-cursor-glow'
+import ConsentBanner from '@/components/privacy/consent-banner'
 import { buildMetadata, siteDescription, siteName, siteUrl } from '@/lib/seo'
 
 // Content is database-backed. Keep Prisma out of the build-time prerender
@@ -63,6 +64,7 @@ export default function RootLayout({
         </div>
         <Footer />
         <Toaster />
+        <ConsentBanner />
         <MouseFollower />
       </body>
     </html>

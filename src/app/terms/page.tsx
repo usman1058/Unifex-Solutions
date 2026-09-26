@@ -1,159 +1,74 @@
-'use client'
+import LegalPage from '@/components/legal/legal-page'
 
-import { motion } from 'framer-motion'
-import { Scale, ShieldAlert, Gavel, ScrollText, ArrowUpRight } from 'lucide-react'
-import Link from 'next/link'
+const sections = [
+  {
+    title: 'Agreement and eligibility',
+    paragraphs: [
+      'By accessing this website or engaging Unifex Solutions, you agree to these Terms of Service and our Privacy Policy. If you do not agree, do not use the website or submit an order.',
+      'Unifex Solutions is an independent digital studio operating under the Unifex Solutions brand. These terms do not represent the brand as a registered company or organization.',
+      'You must be legally able to enter into an agreement in your jurisdiction. If you act for a company, you confirm that you have authority to bind that company.',
+    ],
+  },
+  {
+    title: 'Website content and acceptable use',
+    bullets: [
+      'Use the website lawfully and do not attempt to disrupt, probe, reverse engineer, scrape, overload, or bypass its security or access controls.',
+      'Do not submit unlawful, infringing, deceptive, harmful, malicious, or confidential information that you are not authorized to share.',
+      'Do not use our content, brand, code, visual systems, or materials to misrepresent an affiliation with Unifex Solutions.',
+      'We may suspend access or remove submissions that create legal, security, operational, or safety risk.',
+    ],
+  },
+  {
+    title: 'Services, proposals, and scope',
+    paragraphs: [
+      'Service pages describe typical capabilities and indicative pricing. A project is not accepted until both parties agree to a written proposal, statement of work, or other engagement document that defines scope, deliverables, timeline, responsibilities, fees, taxes, revisions, hosting, support, and acceptance criteria.',
+      'We may ask for clarification before accepting a request. Indicative pricing, availability, technologies, and delivery estimates may change after discovery.',
+    ],
+  },
+  {
+    title: 'Orders, payments, and refunds',
+    paragraphs: [
+      'Submitting an order or project request does not by itself guarantee acceptance or start work. Work begins after the applicable proposal is accepted and required payment or deposit conditions are met.',
+      'Fees, payment milestones, cancellation terms, refunds, taxes, third-party costs, and late-payment consequences are governed by the applicable written engagement document. Do not upload payment-card numbers or banking credentials through this website.',
+    ],
+  },
+  {
+    title: 'Intellectual property',
+    paragraphs: [
+      'Unifex Solutions retains ownership of its pre-existing tools, reusable components, processes, templates, know-how, trademarks, and general methods. Unless an engagement document states otherwise, the client receives rights to final paid deliverables for the agreed purpose after all amounts due are paid.',
+      'You retain ownership of materials you provide, but grant us the limited rights needed to review, modify, store, and use them to provide the requested service. You confirm that you have the rights required to provide those materials.',
+    ],
+  },
+  {
+    title: 'Third-party services and availability',
+    paragraphs: [
+      'Projects may depend on third-party hosting, APIs, payment providers, domains, analytics, advertising networks, open-source software, or client-managed systems. Those services have their own terms and availability, and their outages, pricing, policy changes, or security incidents may affect delivery.',
+      'The website and its content are provided on an availability basis. We do not promise that every page, integration, or feature will always be uninterrupted, error-free, or suitable for a particular purpose.',
+    ],
+  },
+  {
+    title: 'Warranties and liability',
+    paragraphs: [
+      'To the extent permitted by law, Unifex Solutions disclaims implied warranties not expressly stated in a written engagement document. Nothing in these terms excludes liability that cannot legally be excluded, including liability for fraud or deliberate misconduct.',
+      'To the extent permitted by law, neither party is liable for indirect, incidental, special, consequential, or loss-of-profit damages. Any agreed liability cap will be stated in the applicable engagement document; otherwise, the maximum aggregate liability for a website-related claim is limited to the fees paid for the specific service giving rise to the claim during the six months before the event.',
+    ],
+  },
+  {
+    title: 'Termination and changes',
+    paragraphs: [
+      'Either party may end an engagement according to its written terms. We may suspend website access for security, legal, or operational reasons. Ending access does not remove payment obligations or provisions that are intended to survive termination.',
+      'We may update these terms from time to time. Continued use after an update means you accept the revised terms. If a provision is unenforceable, the remaining provisions remain in effect.',
+    ],
+  },
+  {
+    title: 'Governing law and contact',
+    paragraphs: [
+      'These terms are governed by the laws applicable to the jurisdiction in which Unifex Solutions is registered, without regard to conflict-of-law rules. Any mandatory consumer or data-protection rights remain unaffected.',
+      'For questions about these terms, email info@unifexsolutions.com or use the contact page.',
+    ],
+  },
+]
 
 export default function TermsPage() {
-  const lastUpdated = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-
-  return (
-    <main className="min-h-screen pt-24 overflow-hidden">
-      {/* Premium Hero */}
-      <section className="relative py-32 border-b border-border/10">
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-5xl">
-            <motion.span 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-[10px] font-bold tracking-[0.6em] text-primary uppercase mb-8 block"
-            >
-              Legal Framework
-            </motion.span>
-            <motion.h1 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-[10vw] md:text-[8vw] font-headline font-black tracking-tighter leading-[0.8] mb-12 italic uppercase"
-            >
-              OPERATIONAL<br />STATUTES
-            </motion.h1>
-            
-            <p className="text-xl font-light text-on-surface/80 max-w-xl leading-relaxed border-l border-primary/20 pl-8">
-              Defining the governing ordinances, entity liabilities, and structural conditions for the utilization of Unifex tactical assets.
-            </p>
-            
-            <div className="mt-12 flex items-center gap-4 text-[10px] font-black tracking-widest text-primary uppercase">
-               Last Update Internal Clock: {lastUpdated.toUpperCase()}
-            </div>
-          </div>
-        </div>
-        <div className="absolute top-0 right-0 w-1/4 h-full bg-surface-container-low/30 -skew-x-12 translate-x-1/2 pointer-events-none" />
-      </section>
-
-      {/* Structured Mandates */}
-      <section className="py-32">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto">
-             <div className="space-y-24">
-                
-                <motion.div 
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                >
-                   <div className="flex items-center gap-6 mb-12">
-                      <div className="w-12 h-12 border border-primary/20 flex items-center justify-center text-primary">
-                         <Gavel className="w-5 h-5" />
-                      </div>
-                      <h2 className="text-4xl font-headline font-black tracking-tighter uppercase italic">01 // BINDING DIRECTIVE</h2>
-                   </div>
-                   <div className="prose prose-invert prose-lg max-w-none border-l border-border/10 pl-12 ml-6">
-                      <p className="text-foreground/80 font-light leading-relaxed">
-                        By accessing the Unifex Platform or initializing any engineering workflow, you acknowledge full submission to the mandates detailed herein. 
-                        Failure to comply results in immediate revocation of operational access.
-                      </p>
-                   </div>
-                </motion.div>
-
-                <motion.div 
-                   initial={{ opacity: 0, y: 30 }}
-                   whileInView={{ opacity: 1, y: 0 }}
-                   viewport={{ once: true }}
-                >
-                   <div className="flex items-center gap-6 mb-12">
-                      <div className="w-12 h-12 border border-primary/20 flex items-center justify-center text-primary">
-                         <Scale className="w-5 h-5" />
-                      </div>
-                      <h2 className="text-4xl font-headline font-black tracking-tighter uppercase italic">02 // INTELLECTUAL ASSETS</h2>
-                   </div>
-                   <div className="prose prose-invert prose-lg max-w-none border-l border-border/10 pl-12 ml-6">
-                      <p className="text-foreground/80 font-light leading-relaxed">
-                        The Unifex structural architecture, code matrices, visual frameworks, and tactical methodologies are protected by global intellectual domain laws. 
-                        Unauthorized replication or modification of these assets is strictly prohibited.
-                      </p>
-                   </div>
-                </motion.div>
-
-                <motion.div 
-                   initial={{ opacity: 0, y: 30 }}
-                   whileInView={{ opacity: 1, y: 0 }}
-                   viewport={{ once: true }}
-                >
-                   <div className="flex items-center gap-6 mb-12">
-                      <div className="w-12 h-12 border border-primary/20 flex items-center justify-center text-primary">
-                         <ScrollText className="w-5 h-5" />
-                      </div>
-                      <h2 className="text-4xl font-headline font-black tracking-tighter uppercase italic">03 // USER SUBMISSIONS</h2>
-                   </div>
-                   <div className="prose prose-invert prose-lg max-w-none border-l border-border/10 pl-12 ml-6">
-                      <p className="text-foreground/80 font-light leading-relaxed">
-                         Any data units, tactical debriefs, or operational inputs provided by the user grant Unifex a non-exclusive, worldwide mandate 
-                         to utilize, analyze, and integrate such data for the improvement of the platform's architectural integrity.
-                      </p>
-                   </div>
-                </motion.div>
-
-                <motion.div 
-                   initial={{ opacity: 0, y: 30 }}
-                   whileInView={{ opacity: 1, y: 0 }}
-                   viewport={{ once: true }}
-                >
-                   <div className="flex items-center gap-6 mb-12">
-                      <div className="w-12 h-12 border border-primary/20 flex items-center justify-center text-primary">
-                         <ShieldAlert className="w-5 h-5" />
-                      </div>
-                      <h2 className="text-4xl font-headline font-black tracking-tighter uppercase italic">04 // LIABILITY VECTORS</h2>
-                   </div>
-                   <div className="prose prose-invert prose-lg max-w-none border-l border-border/10 pl-12 ml-6">
-                      <p className="text-foreground/80 font-light leading-relaxed">
-                        Unifex Solutions shall not be held liable for any indirect, incidental, or structural damages arising from the engagement of our services. 
-                        Users operate with full awareness of the kinetic nature of digital systems.
-                      </p>
-                   </div>
-                </motion.div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-12 border-t border-border/10">
-                   {[
-                      { section: '05 // INDEMNITY', content: 'Users hereby indemnify Unifex units from any liabilities arising from breach of statutes.' },
-                      { section: '06 // SEVERABILITY', content: 'Invalidity of any single clause does not compromise the integrity of the total framework.' },
-                      { section: '07 // JURISDICTION', content: 'Terms are governed by the primary registration district of the Unifex Entity.' },
-                      { section: '08 // UPDATES', content: 'Statutes are subject to kinetic revision. Regular audit by user is required.' }
-                   ].map((item, i) => (
-                      <div key={i} className="p-8 border border-border/5 bg-surface-container-low/50">
-                         <h3 className="text-xs font-black tracking-[0.3em] text-primary mb-4 uppercase">{item.section}</h3>
-                         <p className="text-sm font-light text-foreground/40 leading-relaxed">{item.content}</p>
-                      </div>
-                   ))}
-                </div>
-
-                <motion.div 
-                   initial={{ opacity: 0, y: 30 }}
-                   whileInView={{ opacity: 1, y: 0 }}
-                   viewport={{ once: true }}
-                   className="pt-24 text-center"
-                >
-                   <h2 className="text-[10px] font-black tracking-[0.6em] text-foreground/20 uppercase mb-8">Statutory Clarification</h2>
-                   <p className="text-xl font-light text-foreground/40 mb-12 uppercase italic tracking-tighter">Request terminal link for legal inquiries:</p>
-                   <Link href="/contact" className="inline-flex items-center gap-4 px-12 py-6 border border-primary/20 text-primary text-[10px] font-black tracking-[0.4em] uppercase hover:bg-primary hover:text-primary-foreground transition-all rounded-sm architectural-glow">
-                      CONTACT LEGAL UNIT <ArrowUpRight className="w-4 h-4" />
-                   </Link>
-                </motion.div>
-
-             </div>
-          </div>
-        </div>
-      </section>
-    </main>
-  )
+  return <LegalPage eyebrow="Legal terms" title="Terms of service" intro="The rules for using this website, requesting services, submitting materials, reviewing indicative pricing, and entering a project engagement with Unifex Solutions." updated="August 9, 2026" sections={sections} />
 }

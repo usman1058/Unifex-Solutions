@@ -46,6 +46,22 @@ The admin login page and dashboard have been successfully created and tested.
 - Notes management
 - Search and filter
 
+### 6. Orders (`/admin/orders`)
+- List client service orders with status + payment badges
+- Search and filter by status (pending / processing / completed / rejected / cancelled)
+- View order details, project brief, and uploaded payment receipts
+- Approve payment (marks order as paid + processing), reject, or mark completed
+- Send a message to the client (shown on their order-status page)
+
+### 7. Social Scheduler (`/admin/social`)
+- AI-powered social post scheduling
+- Connect social accounts, generate posts with AI, schedule auto-publishing
+- Auto-publisher runs via `npm run scheduler`
+
+### 8. Settings (`/admin/settings`)
+- AI provider configuration (OpenAI / Anthropic / Google / custom) with connection test
+- Bank account details shown to clients at checkout (account name, number, sort code, IBAN, SWIFT, instructions)
+
 ## 🧪 Testing Checklist
 
 ### Login Page
@@ -59,6 +75,9 @@ The admin login page and dashboard have been successfully created and tested.
 - [x] Invalid credentials show error
 - [x] Redirects to dashboard on success
 - [x] Redirects to login when not authenticated
+- [x] Session is a signed, httpOnly cookie (`unifex_admin_session`, 7-day expiry)
+- [x] All admin APIs reject unauthenticated requests with 401
+- [x] Logout clears the session cookie
 
 ### Dashboard
 - [x] Statistics display correctly
@@ -128,6 +147,14 @@ All backend APIs are working and connected:
 - ✅ `/api/blog/tags` - Tags
 - ✅ `/api/testimonials` - Testimonials CRUD
 - ✅ `/api/contact` - Contact Forms
+- ✅ `/api/orders` - Service Orders (admin) + public checkout creation
+- ✅ `/api/orders/status` - Public order tracking
+- ✅ `/api/uploads` - Receipt file upload
+- ✅ `/api/settings` - AI + Bank settings
+- ✅ `/api/scheduled-posts` - Social post scheduling
+- ✅ `/api/admin/login` - Session login (sets httpOnly cookie)
+- ✅ `/api/admin/logout` - Session logout
+- ✅ `/api/admin/session` - Session verification
 
 ## 🎯 Next Steps
 
@@ -147,17 +174,17 @@ The admin dashboard is fully responsive:
 
 ## 🔐 Security Notes
 
-**Current Implementation (Demo):**
-- Client-side authentication
-- Hardcoded credentials
-- LocalStorage for session
+**Current Implementation:**
+- Server-side session authentication via signed, httpOnly cookie (`unifex_admin_session`)
+- HMAC-SHA256 signed tokens with 7-day expiry and timing-safe comparison
+- All admin APIs protected by `requireAdmin()` middleware — unauthenticated requests get 401
+- Credentials configured via environment variables (`ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`)
 
 **For Production:**
-- Implement server-side authentication
-- Use NextAuth.js
-- Store credentials in environment variables
-- Add API route protection
-- Implement proper session management
+- Set a strong `ADMIN_SESSION_SECRET` in environment variables
+- Enforce HTTPS (cookies are already `secure` in production)
+- Consider rate-limiting the login endpoint
+- Add CSRF protection for state-changing operations
 
 ---
 
