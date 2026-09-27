@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Search, Mail, Phone, Building2, Clock, CheckCircle, XCircle } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface ContactSubmission {
   id: string
@@ -59,9 +60,15 @@ export default function AdminContactPage() {
         if (selectedSubmission?.id === submission.id) {
           setSelectedSubmission({ ...selectedSubmission, status: newStatus })
         }
+        toast.success('Status Updated', {
+          description: `${submission.name}'s status changed to "${newStatus}".`,
+        })
+      } else {
+        toast.error('Update Failed', { description: 'Could not update the submission status.' })
       }
     } catch (error) {
       console.error('Error updating submission:', error)
+      toast.error('Update Failed', { description: 'An unexpected error occurred.' })
     }
   }
 

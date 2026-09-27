@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Save, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 interface ServiceFormData {
   slug: string
@@ -64,12 +65,18 @@ export default function ServiceForm({ service, isEditing = false }: ServiceFormP
       const data = await response.json()
 
       if (data.success) {
+        toast.success(isEditing ? 'Service Updated' : 'Service Created', {
+          description: `"${formData.title}" has been ${isEditing ? 'updated' : 'created'} successfully.`,
+        })
         router.push('/admin/services')
       } else {
-        setError(data.error?.message || 'Failed to save service')
+        const msg = data.error?.message || 'Failed to save service'
+        setError(msg)
+        toast.error('Save Failed', { description: msg })
       }
     } catch (err) {
       setError('An error occurred. Please try again.')
+      toast.error('Save Failed', { description: 'An unexpected error occurred. Please try again.' })
     } finally {
       setLoading(false)
     }

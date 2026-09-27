@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowUpRight, ArrowLeft, CheckCircle2, AlertCircle, Upload, Lock, Loader2, Check, FileText } from 'lucide-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 interface ServiceOption {
   id: string
@@ -90,11 +91,16 @@ export default function OrderFlow({ services, bankDetails = {}, initialServiceSl
       const data = await response.json()
       if (response.ok && data.success) {
         setReceiptFile({ name: file.name, url: data.data.url })
+        toast.success('Receipt Uploaded', {
+          description: 'Your payment receipt has been attached to the order.',
+        })
       } else {
         setError(data.error?.message || 'Upload failed. Please try again.')
+        toast.error('Upload Failed', { description: data.error?.message || 'Could not upload the receipt. Please try again.' })
       }
     } catch {
       setError('Upload failed. Please try again.')
+      toast.error('Upload Failed', { description: 'Network error during upload. Please try again.' })
     } finally {
       setUploading(false)
     }
@@ -129,12 +135,17 @@ export default function OrderFlow({ services, bankDetails = {}, initialServiceSl
       const data = await response.json()
       if (response.ok && data.success) {
         setCreatedOrder(data.data)
-        changeStep('success', 'Securing your engagement reference')
+        setStep('success')
+        toast.success('Order Submitted', {
+          description: `Reference ${data.data.orderNumber} — your engagement is now in our system.`,
+        })
       } else {
         setError(data.error?.message || 'Order submission failed. Please try again.')
+        toast.error('Order Failed', { description: data.error?.message || 'Could not submit the order. Please try again.' })
       }
     } catch {
       setError('Network error. Please try again.')
+      toast.error('Network Error', { description: 'Could not reach the server. Please try again.' })
     } finally {
       setSubmitting(false)
     }

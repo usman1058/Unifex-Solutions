@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 import {
   Plus,
   Edit,
@@ -58,9 +59,13 @@ export default function AdminBlogPage() {
       })
       if (response.ok) {
         setPosts(posts.filter(p => p.slug !== slug))
+        toast.success('Post Deleted', { description: 'The blog post has been removed.' })
+      } else {
+        toast.error('Delete Failed', { description: 'Could not delete the post.' })
       }
     } catch (error) {
       console.error('Error deleting post:', error)
+      toast.error('Delete Failed', { description: 'An unexpected error occurred.' })
     }
   }
 

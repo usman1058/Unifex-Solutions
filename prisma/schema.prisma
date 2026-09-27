@@ -402,3 +402,30 @@ model OrderPayment {
 // Stored via AppSetting keys under category "bank" — e.g. bank_account_name,
 // bank_account_number, bank_iban, bank_swift, bank_beneficiary, bank_address.
 // Managed from Admin → Settings.
+
+// ==================== ADMIN USERS ====================
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("admin") // super_admin, admin, editor
+  isActive     Boolean  @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ==================== INTEGRATIONS ====================
+
+model Integration {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   // e.g. openai, anthropic, google, stripe, mailchimp, slack, webhook
+  config      String   // JSON string of configuration (API keys, endpoints, etc.)
+  description String?
+  enabled     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

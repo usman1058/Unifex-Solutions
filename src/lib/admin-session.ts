@@ -1,5 +1,6 @@
 import crypto from 'node:crypto'
 import { cookies } from 'next/headers'
+import { db } from '@/lib/db'
 
 export const ADMIN_SESSION_COOKIE = 'unifex_admin_session'
 
@@ -22,9 +23,21 @@ function sign(value: string) {
   return crypto.createHmac('sha256', getConfig().secret).update(value).digest('hex')
 }
 
-export function verifyCredentials(email: string, password: string) {
+function hashPassword(password: string) {
+  return crypto.createHash('sha256').update(password).digest('hex')
+}
+
+export async function verifyCredentials(email: string, password: string) {
   const config = getConfig()
-  return email === config.email && password === config.password
+  if (email === config.email && password === config.password) return true
+
+  // Database-backed admin users
+  const admin = await db.adminUser.findUnique({ where: { email } })
+  if (admin && admin.isActive && admin.passwordHash === hashPassword(password)) {
+    return true
+  }
+
+  return false
 }
 
 export function createSessionToken() {

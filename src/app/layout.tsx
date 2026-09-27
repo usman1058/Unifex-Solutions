@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as SonnerToaster } from "sonner";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { MouseFollower } from "@/components/ui/mouse-follower";
@@ -64,6 +65,7 @@ export default function RootLayout({
         </div>
         <Footer />
         <Toaster />
+        <SonnerToaster position="top-right" richColors closeButton />
         <ConsentBanner />
         <MouseFollower />
       </body>

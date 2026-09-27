@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 import {
   Plus,
   Edit,
@@ -56,9 +57,13 @@ export default function AdminServicesPage() {
       })
       if (response.ok) {
         setServices(services.filter(s => s.slug !== slug))
+        toast.success('Service Deleted', { description: 'The service has been removed.' })
+      } else {
+        toast.error('Delete Failed', { description: 'Could not delete the service.' })
       }
     } catch (error) {
       console.error('Error deleting service:', error)
+      toast.error('Delete Failed', { description: 'An unexpected error occurred.' })
     }
   }
 

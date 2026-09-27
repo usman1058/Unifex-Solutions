@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { AlertCircle, ArrowUpRight, CheckCircle2, Clock3, Mail, MapPin, MoveRight, Send, ShieldCheck, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 export default function ContactPage() {
   const reduceMotion = useReducedMotion()
@@ -21,9 +22,14 @@ export default function ContactPage() {
       if (!response.ok || !data.success) throw new Error(data.error?.message || 'Submission failed. Please try again.')
       setStatus('success')
       setFormData({ name: '', email: '', company: '', phone: '', subject: '', message: '' })
+      toast.success('Brief Received', {
+        description: 'Your project brief is in the queue. A member of the studio will respond within 1–2 days.',
+      })
     } catch (error) {
       setStatus('error')
-      setErrorMessage(error instanceof Error ? error.message : 'Network connection error. Please try again.')
+      const msg = error instanceof Error ? error.message : 'Network connection error. Please try again.'
+      setErrorMessage(msg)
+      toast.error('Submission Failed', { description: msg })
     }
   }
 

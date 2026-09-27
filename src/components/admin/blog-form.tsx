@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Save, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 interface BlogFormData {
   slug: string
@@ -86,12 +87,18 @@ export default function BlogForm({ post, isEditing = false }: BlogFormProps) {
       const data = await response.json()
 
       if (data.success) {
+        toast.success(isEditing ? 'Post Updated' : 'Post Created', {
+          description: `"${formData.title}" has been ${isEditing ? 'updated' : 'created'} successfully.`,
+        })
         router.push('/admin/blog')
       } else {
-        setError(data.error?.message || 'Failed to save post')
+        const msg = data.error?.message || 'Failed to save post'
+        setError(msg)
+        toast.error('Save Failed', { description: msg })
       }
     } catch (err) {
       setError('An error occurred. Please try again.')
+      toast.error('Save Failed', { description: 'An unexpected error occurred. Please try again.' })
     } finally {
       setLoading(false)
     }

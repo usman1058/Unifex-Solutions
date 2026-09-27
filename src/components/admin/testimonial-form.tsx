@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Save, ArrowLeft, Star } from 'lucide-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 interface TestimonialFormData {
   name: string
@@ -58,12 +59,18 @@ export default function TestimonialForm({ testimonial, isEditing = false }: Test
       const data = await response.json()
 
       if (data.success) {
+        toast.success(isEditing ? 'Testimonial Updated' : 'Testimonial Added', {
+          description: `Testimonial from "${formData.name}" has been ${isEditing ? 'updated' : 'added'} successfully.`,
+        })
         router.push('/admin/testimonials')
       } else {
-        setError(data.error?.message || 'Failed to save testimonial')
+        const msg = data.error?.message || 'Failed to save testimonial'
+        setError(msg)
+        toast.error('Save Failed', { description: msg })
       }
     } catch (err) {
       setError('An error occurred. Please try again.')
+      toast.error('Save Failed', { description: 'An unexpected error occurred. Please try again.' })
     } finally {
       setLoading(false)
     }

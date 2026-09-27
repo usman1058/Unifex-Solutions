@@ -5,7 +5,7 @@ import { errorResponse, successResponse } from '@/lib/api-utils'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => null)
-    if (!body?.email || !body?.password || !verifyCredentials(body.email, body.password)) {
+    if (!body?.email || !body?.password || !(await verifyCredentials(body.email, body.password))) {
       return NextResponse.json(errorResponse('UNAUTHORIZED', 'Invalid email or password'), { status: 401 })
     }
 

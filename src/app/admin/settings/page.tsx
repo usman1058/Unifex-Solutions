@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Save, Loader2, CheckCircle2, Bug, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import IntegrationsManager from '@/components/admin/integrations-manager'
 
 interface Setting {
   id: string
@@ -304,6 +305,9 @@ export default function AdminSettingsPage() {
             />
           </div>
         </div>
+
+        {/* Integrations */}
+        <IntegrationsManager />
 
         {/* Test connection */}
         <div className="bg-card border rounded-lg p-6">

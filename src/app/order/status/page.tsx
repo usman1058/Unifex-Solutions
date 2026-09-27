@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Search, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 interface OrderStatusResult {
   orderNumber: string
@@ -53,12 +54,19 @@ export default function OrderStatusPage() {
       if (response.ok && data.success) {
         setResult(data.data)
         setStatus('found')
+        toast.success('Order Located', {
+          description: `Reference ${data.data.orderNumber} — status retrieved successfully.`,
+        })
       } else {
         setStatus('notfound')
+        toast.error('Order Not Found', {
+          description: 'No order matches that reference number and email combination.',
+        })
       }
     } catch {
       setStatus('error')
       setError('Network error. Please try again.')
+      toast.error('Lookup Failed', { description: 'Network error. Please try again.' })
     }
   }
 

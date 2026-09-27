@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react'
 import { useAdminAuth } from '@/contexts/admin-auth-context'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login, isAuthenticated } = useAdminAuth()
   const router = useRouter()
@@ -21,20 +21,24 @@ export default function AdminLoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
     setLoading(true)
 
     try {
-      const result = await login(email, password)
-      if (result.success) {
+      const success = await login(email, password)
+      if (success) {
+        toast.success('Welcome back, Administrator', {
+          description: 'Session established. Redirecting to dashboard…',
+        })
         router.push('/admin/dashboard')
       } else {
-        setError(result.message || 'Invalid email or password')
+        toast.error('Authentication Failed', {
+          description: 'Invalid email or password. Please verify your credentials.',
+        })
       }
-    } catch (err) {
-      setError(err instanceof DOMException && err.name === 'AbortError'
-        ? 'The login request timed out. Restart the development server and try again.'
-        : 'The login service is unavailable. Check the server terminal for the underlying error.')
+    } catch {
+      toast.error('Login Service Unavailable', {
+        description: 'Could not reach the authentication service. Check the server terminal.',
+      })
     } finally {
       setLoading(false)
     }
@@ -78,12 +82,6 @@ export default function AdminLoginPage() {
               required
             />
           </div>
-
-          {error && (
-            <div className="border border-red-500/30 bg-red-950/20 px-6 py-4 text-sm text-red-200">
-              {error}
-            </div>
-          )}
 
           <button
             type="submit"

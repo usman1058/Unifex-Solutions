@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 import {
   Plus,
   Edit,
@@ -58,9 +59,13 @@ export default function AdminTestimonialsPage() {
       })
       if (response.ok) {
         setTestimonials(testimonials.filter(t => t.id !== id))
+        toast.success('Testimonial Deleted', { description: 'The testimonial has been removed.' })
+      } else {
+        toast.error('Delete Failed', { description: 'Could not delete the testimonial.' })
       }
     } catch (error) {
       console.error('Error deleting testimonial:', error)
+      toast.error('Delete Failed', { description: 'An unexpected error occurred.' })
     }
   }
 
