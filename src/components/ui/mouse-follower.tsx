@@ -2,77 +2,55 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+/** A zero-lag pointer treatment. Position is written directly on pointermove;
+ * no requestAnimationFrame interpolation is used, so it never trails the OS cursor. */
 export function MouseFollower() {
   const cursorRef = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() =>
-    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  )
+  const [visible, setVisible] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(() => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
-    mediaQuery.addEventListener('change', handler)
-    return () => mediaQuery.removeEventListener('change', handler)
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const onChange = (event: MediaQueryListEvent) => setReducedMotion(event.matches)
+    media.addEventListener('change', onChange)
+    return () => media.removeEventListener('change', onChange)
   }, [])
 
   useEffect(() => {
     const cursor = cursorRef.current
-    if (!cursor || prefersReducedMotion) return
-
-    // Only hide the native cursor after this component has mounted and can
-    // provide a replacement. This preserves a usable cursor during hydration
-    // and when reduced-motion settings disable the custom cursor.
+    if (!cursor || reducedMotion) return
     document.body.dataset.customCursor = 'true'
 
-    const handleMove = (event: PointerEvent) => {
-      // Write the coordinates on the event itself. The old lerp loop made
-      // the cursor visibly trail behind fast pointer movement.
-      cursor.style.setProperty('--cursor-x', `${event.clientX}px`)
-      cursor.style.setProperty('--cursor-y', `${event.clientY}px`)
-      if (!isVisible) setIsVisible(true)
-      
-      const element = event.target instanceof Element ? event.target : null
-      const target = element?.closest('a, button, [role="button"], input, textarea, select')
-      const heading = element?.closest('h1, h2, h3, h4')
+    const move = (event: PointerEvent) => {
+      cursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`
+      cursor.dataset.active = 'true'
+      setVisible(true)
+      const target = event.target instanceof Element ? event.target.closest('a, button, [role="button"], input, textarea, select') : null
+      const heading = event.target instanceof Element ? event.target.closest('h1, h2, h3, h4') : null
       cursor.dataset.hover = target ? 'true' : 'false'
       cursor.dataset.mode = heading ? 'heading' : target ? 'interactive' : 'default'
-      cursor.dataset.active = 'true'
     }
-
-    const handleDown = () => {
+    const down = () => {
       cursor.dataset.click = 'true'
-      window.setTimeout(() => { if (cursor) cursor.dataset.click = 'false' }, 420)
+      window.setTimeout(() => { cursor.dataset.click = 'false' }, 180)
     }
+    const leave = () => { cursor.dataset.active = 'false'; setVisible(false) }
 
-    const handleLeave = () => {
-      setIsVisible(false)
-      cursor.dataset.active = 'false'
-    }
-
-    window.addEventListener('pointermove', handleMove, { passive: true })
-    window.addEventListener('pointerdown', handleDown, { passive: true })
-    window.addEventListener('pointerleave', handleLeave, { passive: true })
-
+    window.addEventListener('pointermove', move, { passive: true })
+    window.addEventListener('pointerdown', down, { passive: true })
+    document.documentElement.addEventListener('pointerleave', leave, { passive: true })
     return () => {
       delete document.body.dataset.customCursor
-      window.removeEventListener('pointermove', handleMove)
-      window.removeEventListener('pointerdown', handleDown)
-      window.removeEventListener('pointerleave', handleLeave)
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerdown', down)
+      document.documentElement.removeEventListener('pointerleave', leave)
     }
-  }, [prefersReducedMotion])
+  }, [reducedMotion])
 
-  if (prefersReducedMotion) return null
-
-  return (
-      <div
-        ref={cursorRef}
-        aria-hidden="true"
-        className="unifex-cursor"
-        data-active={isVisible ? 'true' : 'false'}
-      >
-        <span className="unifex-cursor-core" />
-        <span className="unifex-cursor-label" />
-      </div>
-    )
-  }
+  if (reducedMotion) return null
+  return <div ref={cursorRef} aria-hidden="true" className="unifex-cursor" data-active={visible ? 'true' : 'false'}>
+    <span className="unifex-cursor-ring" />
+    <span className="unifex-cursor-core" />
+    <span className="unifex-cursor-label" />
+  </div>
+}
