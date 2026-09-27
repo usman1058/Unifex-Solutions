@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "sonner";
-import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import { MouseFollower } from "@/components/ui/mouse-follower";
 import AmbientCursorGlow from '@/components/ui/ambient-cursor-glow'
+import SmoothScroll from '@/components/ui/smooth-scroll'
 import ConsentBanner from '@/components/privacy/consent-banner'
+import RootLayoutClient from '@/components/layout/root-layout-client'
 import { buildMetadata, siteDescription, siteName, siteUrl } from '@/lib/seo'
 
 // Content is database-backed. Keep Prisma out of the build-time prerender
@@ -58,15 +58,12 @@ export default function RootLayout({
         className="antialiased bg-background text-foreground min-h-screen flex flex-col"
       >
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} />
+        <SmoothScroll />
         <AmbientCursorGlow />
-        <Navbar />
-        <div className="flex-1">
+        <RootLayoutClient>
           {children}
-        </div>
-        <Footer />
-        <Toaster />
+        </RootLayoutClient>
         <SonnerToaster position="top-right" richColors closeButton />
-        <ConsentBanner />
         <MouseFollower />
       </body>
     </html>

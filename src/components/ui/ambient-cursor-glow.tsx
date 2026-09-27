@@ -1,13 +1,22 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export default function AmbientCursorGlow() {
   const glowRef = useRef<HTMLDivElement>(null)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReducedMotion(mediaQuery.matches)
+    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
+    mediaQuery.addEventListener('change', handler)
+    return () => mediaQuery.removeEventListener('change', handler)
+  }, [])
 
   useEffect(() => {
     const glow = glowRef.current
-    if (!glow || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!glow || prefersReducedMotion) return
 
     let frame = 0
     let targetX = window.innerWidth * 0.78
@@ -16,11 +25,11 @@ export default function AmbientCursorGlow() {
     let currentY = targetY
 
     const render = () => {
-      currentX += (targetX - currentX) * 0.075
-      currentY += (targetY - currentY) * 0.075
+      currentX += (targetX - currentX) * 0.05
+      currentY += (targetY - currentY) * 0.05
       glow.style.setProperty('--cursor-x', `${currentX}px`)
       glow.style.setProperty('--cursor-y', `${currentY}px`)
-      glow.style.setProperty('--pull-y', `${(window.innerHeight / 2 - currentY) * 0.028}px`)
+      glow.style.setProperty('--pull-y', `${(window.innerHeight / 2 - currentY) * 0.02}px`)
       frame = requestAnimationFrame(render)
     }
 
@@ -37,7 +46,9 @@ export default function AmbientCursorGlow() {
       window.removeEventListener('pointermove', handlePointerMove)
       cancelAnimationFrame(frame)
     }
-  }, [])
+  }, [prefersReducedMotion])
+
+  if (prefersReducedMotion) return null
 
   return <div ref={glowRef} aria-hidden="true" className="ambient-cursor-glow" />
 }
