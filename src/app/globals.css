@@ -146,6 +146,7 @@
   }
 
   .unifex-cursor-core {
+    position: absolute;
     left: var(--cursor-x);
     top: var(--cursor-y);
     width: 0.5rem;
@@ -159,6 +160,7 @@
   }
 
   .unifex-cursor-label {
+    position: absolute;
     left: calc(var(--cursor-x) + 3rem);
     top: calc(var(--cursor-y) + 2.5rem);
     color: rgba(255, 215, 175, 0.8);
@@ -201,12 +203,12 @@
   }
 
   @media (pointer: fine) {
-    body,
-    a,
-    button,
-    input,
-    textarea,
-    select {
+    body[data-custom-cursor='true'],
+    body[data-custom-cursor='true'] a,
+    body[data-custom-cursor='true'] button,
+    body[data-custom-cursor='true'] input,
+    body[data-custom-cursor='true'] textarea,
+    body[data-custom-cursor='true'] select {
       cursor: none;
     }
   }

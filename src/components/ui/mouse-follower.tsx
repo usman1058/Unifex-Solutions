@@ -20,6 +20,11 @@ export function MouseFollower() {
     const cursor = cursorRef.current
     if (!cursor || prefersReducedMotion) return
 
+    // Only hide the native cursor after this component has mounted and can
+    // provide a replacement. This preserves a usable cursor during hydration
+    // and when reduced-motion settings disable the custom cursor.
+    document.body.dataset.customCursor = 'true'
+
     let frame = 0
     let x = window.innerWidth / 2
     let y = window.innerHeight / 2
@@ -75,6 +80,7 @@ export function MouseFollower() {
     frame = requestAnimationFrame(render)
 
     return () => {
+      delete document.body.dataset.customCursor
       window.removeEventListener('pointermove', handleMove)
       window.removeEventListener('pointerdown', handleDown)
       window.removeEventListener('pointerleave', handleLeave)
