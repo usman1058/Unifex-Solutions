@@ -1,7 +1,7 @@
 // Standalone scheduler worker for Unifex social auto-post system.
 //
 // Usage (Node):
-//   node scripts/run-scheduler.mjs --base http://localhost:3000 [--interval 300000]
+//   node scripts/next-scheduler.mjs --base http://localhost:3000 [--interval 300000]
 //
 // Or schedule via cron / task scheduler:
 //   */5 * * * * node /path/to/unifex/scripts/next-scheduler.mjs --base http://localhost:3000 2>> /var/log/unifex-scheduler.log
@@ -17,10 +17,17 @@ function getArg(name, def) {
 
 const BASE = (getArg('base', process.env.APP_BASE_URL) || 'http://localhost:3000').replace(/\/$/, '')
 const INTERVAL = parseInt(getArg('interval', process.env.SCHEDULER_INTERVAL || '60000'), 10)
+const SECRET = process.env.SCHEDULER_SECRET || ''
+let running = false
 
 async function runOnce() {
+  if (running) return
+  running = true
   try {
-    const res = await fetch(`${BASE}/api/scheduled-posts/run`, { method: 'POST' })
+    const res = await fetch(`${BASE}/api/scheduled-posts/run`, {
+      method: 'POST',
+      headers: SECRET ? { 'x-scheduler-secret': SECRET } : {},
+    })
     const data = await res.json()
     if (res.ok && data.success) {
       const published = data.data?.published?.length || 0
@@ -32,6 +39,8 @@ async function runOnce() {
     }
   } catch (err) {
     console.error(`[${new Date().toISOString()}] Scheduler fetch failed:`, err.message)
+  } finally {
+    running = false
   }
 }
 

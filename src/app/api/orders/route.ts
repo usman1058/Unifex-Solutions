@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { successResponse, errorResponse, isValidEmail, parsePaginationParams, calculatePaginationMeta } from '@/lib/api-utils'
 import { requireAdmin } from '@/lib/admin-api'
+import crypto from 'node:crypto'
 
 export const dynamic = 'force-dynamic'
 
 // Generate a human-friendly order number e.g. UF-2026-0001
 export async function generateOrderNumber(): Promise<string> {
   const year = new Date().getFullYear()
-  const count = await db.serviceOrder.count()
-  return `UF-${year}-${String(count + 1).padStart(4, '0')}`
+  return `UF-${year}-${crypto.randomInt(100000, 1000000)}`
 }
 
 // GET /api/orders - List orders (admin)
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    if (!body.name || !body.email || !body.details) {
+    if (typeof body.name !== 'string' || typeof body.email !== 'string' || typeof body.details !== 'string' || !body.name.trim() || !body.details.trim()) {
       return NextResponse.json(
         errorResponse('VALIDATION_ERROR', 'Name, email, and project details are required'),
         { status: 400 }
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    if (!body.serviceTitle && !body.serviceSlug) {
+    if (typeof body.serviceSlug !== 'string' || !body.serviceSlug.trim()) {
       return NextResponse.json(
         errorResponse('VALIDATION_ERROR', 'Please select a service'),
         { status: 400 }
@@ -78,53 +78,47 @@ export async function POST(request: NextRequest) {
     }
 
     // Resolve service id if a slug was passed
-    let serviceId: string | null = null
-    let serviceTitle = body.serviceTitle
-    if (body.serviceSlug) {
-      const svc = await db.service.findUnique({ where: { slug: body.serviceSlug } })
-      if (svc) {
-        serviceId = svc.id
-        serviceTitle = svc.title
-      }
+    const svc = await db.service.findFirst({ where: { slug: body.serviceSlug.trim(), published: true } })
+    if (!svc) {
+      return NextResponse.json(
+        errorResponse('NOT_FOUND', 'The selected service is not available'),
+        { status: 404 }
+      )
     }
 
-    const orderNumber = await generateOrderNumber()
-
-    const order = await db.serviceOrder.create({
-      data: {
-        orderNumber,
-        serviceId,
-        serviceTitle,
-        name: body.name,
-        email: body.email,
-        phone: body.phone,
-        company: body.company,
-        budget: body.budget,
-        details: body.details,
-        attachments: body.attachments ? JSON.stringify(body.attachments) : undefined,
-        status: 'pending',
-        paymentStatus: body.receiptUrl ? 'pending' : 'unpaid',
-        receiptUrl: body.receiptUrl,
-        receiptFileName: body.receiptFileName,
-        paymentMethod: body.paymentMethod || 'bank_receipt',
-        amountPaid: body.amountPaid,
-      },
-    })
-
-    // Create a payment record if a receipt was uploaded
-    if (body.receiptUrl) {
-      await db.orderPayment.create({
+    const order = await db.$transaction(async (tx) => {
+      const created = await tx.serviceOrder.create({
         data: {
-          orderId: order.id,
-          method: body.paymentMethod || 'bank_receipt',
-          amount: body.amountPaid,
-          receiptUrl: body.receiptUrl,
-          receiptName: body.receiptFileName,
+          orderNumber: await generateOrderNumber(),
+          serviceId: svc.id,
+          serviceTitle: svc.title,
+          name: body.name.trim(),
+          email: body.email.trim().toLowerCase(),
+          phone: typeof body.phone === 'string' ? body.phone.trim() : undefined,
+          company: typeof body.company === 'string' ? body.company.trim() : undefined,
+          budget: typeof body.budget === 'string' ? body.budget.trim() : undefined,
+          details: body.details.trim(),
           status: 'pending',
-          reference: body.reference,
+          paymentStatus: body.receiptUrl ? 'pending' : 'unpaid',
+          receiptUrl: typeof body.receiptUrl === 'string' ? body.receiptUrl : undefined,
+          receiptFileName: typeof body.receiptFileName === 'string' ? body.receiptFileName : undefined,
+          paymentMethod: body.paymentMethod === 'card' ? 'card' : 'bank_receipt',
         },
       })
-    }
+
+      if (body.receiptUrl) {
+        await tx.orderPayment.create({
+          data: {
+            orderId: created.id,
+            method: body.paymentMethod === 'card' ? 'card' : 'bank_receipt',
+            receiptUrl: typeof body.receiptUrl === 'string' ? body.receiptUrl : undefined,
+            receiptName: typeof body.receiptFileName === 'string' ? body.receiptFileName : undefined,
+            status: 'pending',
+          },
+        })
+      }
+      return created
+    })
 
     return NextResponse.json(
       successResponse(order, { message: 'Order created successfully' }),

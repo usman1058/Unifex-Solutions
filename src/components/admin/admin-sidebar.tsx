@@ -14,6 +14,7 @@ import {
   Settings,
   CalendarClock,
   ClipboardList
+  ,Film
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAdminAuth } from '@/contexts/admin-auth-context'
@@ -24,6 +25,7 @@ const menuItems = [
   { name: 'Blog', href: '/admin/blog', icon: FileText },
   { name: 'Testimonials', href: '/admin/testimonials', icon: MessageSquare },
   { name: 'Orders', href: '/admin/orders', icon: ClipboardList },
+  { name: 'Video Clipper', href: '/admin/video', icon: Film },
   { name: 'Social Scheduler', href: '/admin/social', icon: CalendarClock },
   { name: 'Contact Forms', href: '/admin/contact', icon: Mail },
   { name: 'Settings', href: '/admin/settings', icon: Settings },

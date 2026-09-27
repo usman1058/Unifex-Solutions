@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { generateSlug, successResponse, errorResponse, parsePaginationParams, calculatePaginationMeta } from '@/lib/api-utils'
+import { requireAdmin } from '@/lib/admin-api'
 
 // GET /api/case-studies - List all case studies
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const { page, limit, sortBy, sortOrder } = parsePaginationParams(searchParams)
-    const published = searchParams.get('published')
+    const published = searchParams.get('published') ?? 'true'
+    if (published === 'false') {
+      const unauthorized = await requireAdmin()
+      if (unauthorized) return unauthorized
+    }
     const featured = searchParams.get('featured')
     const service = searchParams.get('service')
     const tag = searchParams.get('tag')
@@ -97,6 +102,8 @@ export async function GET(request: NextRequest) {
 
 // POST /api/case-studies - Create a new case study
 export async function POST(request: NextRequest) {
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
   try {
     const body = await request.json()
 

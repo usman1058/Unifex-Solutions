@@ -62,7 +62,7 @@ export default async function FAQPage() {
                   <FadeIn direction="up">
                     <div className="flex items-center gap-4 border-b border-outline-variant/10 pb-4">
                       <span className="text-[10px] font-black tracking-[0.4em] text-primary uppercase italic">
-                        0{catIdx + 1} // {category}
+                        0{catIdx + 1} &#x2F;&#x2F; {category}
                       </span>
                     </div>
                   </FadeIn>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { generateSlug, successResponse, errorResponse } from '@/lib/api-utils'
+import { requireAdmin } from '@/lib/admin-api'
 
 // GET /api/blog/categories - List all categories
 export async function GET(request: NextRequest) {
@@ -26,6 +27,8 @@ export async function GET(request: NextRequest) {
 
 // POST /api/blog/categories - Create a new category
 export async function POST(request: NextRequest) {
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
   try {
     const body = await request.json()
 

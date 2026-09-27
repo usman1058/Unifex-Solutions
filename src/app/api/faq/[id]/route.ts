@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { successResponse, errorResponse } from '@/lib/api-utils'
+import { requireAdmin } from '@/lib/admin-api'
 
 // GET /api/faq/[id] - Get single FAQ by id
 export async function GET(
@@ -38,6 +39,8 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
   try {
     const { id } = await params
     const body = await request.json()
@@ -83,6 +86,8 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
   try {
     const { id } = await params
     // Check if FAQ exists

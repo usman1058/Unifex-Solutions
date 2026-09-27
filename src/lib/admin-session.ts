@@ -41,7 +41,7 @@ export async function verifyCredentials(email: string, password: string) {
 }
 
 export function createSessionToken() {
-  const payload = `admin:${Date.now()}`
+  const payload = `admin:${Date.now()}:${crypto.randomBytes(18).toString('base64url')}`
   return `${payload}.${sign(payload)}`
 }
 
@@ -55,7 +55,9 @@ export function isValidSessionToken(token?: string) {
   if (signature.length !== expected.length) return false
   const validSignature = crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
   if (!validSignature) return false
-  const issuedAt = Number(payload.split(':')[1])
+  const [scope, issuedAtValue] = payload.split(':')
+  if (scope !== 'admin') return false
+  const issuedAt = Number(issuedAtValue)
   return Number.isFinite(issuedAt) && Date.now() - issuedAt < 1000 * 60 * 60 * 24 * 7
 }
 

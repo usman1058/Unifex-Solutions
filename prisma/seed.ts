@@ -684,19 +684,37 @@ async function main() {
     prisma.appSetting.create({
       data: {
         key: 'ai_provider',
-        value: 'openai',
+        value: 'local',
         type: 'text',
         category: 'ai',
-        description: 'Primary AI provider (openai, anthropic, google, custom)',
+        description: 'Primary AI provider (local, openai, anthropic, google, custom)',
       },
     }),
     prisma.appSetting.create({
       data: {
         key: 'ai_model',
-        value: 'gpt-4o-mini',
+        value: 'Xenova/LaMini-Flan-T5-77M',
         type: 'text',
         category: 'ai',
         description: 'Default model used for AI content generation',
+      },
+    }),
+    prisma.appSetting.create({
+      data: {
+        key: 'image_provider',
+        value: 'fallback',
+        type: 'text',
+        category: 'ai',
+        description: 'Blog image provider (fallback, gemini, huggingface, custom)',
+      },
+    }),
+    prisma.appSetting.create({
+      data: {
+        key: 'image_model',
+        value: 'black-forest-labs/FLUX.1-schnell',
+        type: 'text',
+        category: 'ai',
+        description: 'Default text-to-image model used by Hugging Face image generation',
       },
     }),
     prisma.appSetting.create({

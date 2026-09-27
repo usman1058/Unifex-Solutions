@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { successResponse, errorResponse, parsePaginationParams, calculatePaginationMeta } from '@/lib/api-utils'
+import { requireAdmin } from '@/lib/admin-api'
 
 // GET /api/team - List all team members
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const { page, limit, sortBy, sortOrder } = parsePaginationParams(searchParams)
-    const published = searchParams.get('published')
+    const published = searchParams.get('published') ?? 'true'
+    if (published === 'false') {
+      const unauthorized = await requireAdmin()
+      if (unauthorized) return unauthorized
+    }
     const featured = searchParams.get('featured')
 
     // Build where clause
@@ -44,6 +49,8 @@ export async function GET(request: NextRequest) {
 
 // POST /api/team - Create a new team member
 export async function POST(request: NextRequest) {
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
   try {
     const body = await request.json()
 

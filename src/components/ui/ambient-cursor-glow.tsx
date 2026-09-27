@@ -4,11 +4,12 @@ import { useEffect, useRef, useState } from 'react'
 
 export default function AmbientCursorGlow() {
   const glowRef = useRef<HTMLDivElement>(null)
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mediaQuery.matches)
     const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
     mediaQuery.addEventListener('change', handler)
     return () => mediaQuery.removeEventListener('change', handler)

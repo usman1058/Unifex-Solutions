@@ -47,15 +47,16 @@ export function errorResponse(code: string, message: string, details?: any): Api
     error: {
       code,
       message,
-      details
     }
   }
 }
 
 // Parse Pagination Params
 export function parsePaginationParams(searchParams: URLSearchParams) {
-  const page = Math.max(1, parseInt(searchParams.get('page') || '1'))
-  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '10')))
+  const rawPage = Number.parseInt(searchParams.get('page') || '1', 10)
+  const rawLimit = Number.parseInt(searchParams.get('limit') || '10', 10)
+  const page = Number.isFinite(rawPage) ? Math.max(1, rawPage) : 1
+  const limit = Number.isFinite(rawLimit) ? Math.min(100, Math.max(1, rawLimit)) : 10
   const sortBy = searchParams.get('sortBy') || 'createdAt'
   const sortOrder = (searchParams.get('sortOrder') === 'asc' ? 'asc' : 'desc') as 'asc' | 'desc'
 

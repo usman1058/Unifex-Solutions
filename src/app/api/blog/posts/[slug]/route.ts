@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { successResponse, errorResponse, generateSlug, calculateReadingTime } from '@/lib/api-utils'
 import { requireAdmin } from '@/lib/admin-api'
+import { isAdminRequest } from '@/lib/admin-session'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,8 +13,9 @@ export async function GET(
 ) {
   try {
     const { slug } = await params
+    const isAdmin = await isAdminRequest()
     const blogPost = await db.blogPost.findUnique({
-      where: { slug },
+      where: { slug, ...(isAdmin ? {} : { published: true }) },
       include: {
         category: {
           select: {
@@ -39,10 +41,12 @@ export async function GET(
     }
 
     // Increment view count
-    await db.blogPost.update({
-      where: { id: blogPost.id },
-      data: { views: { increment: 1 } }
-    })
+    if (!isAdmin) {
+      await db.blogPost.update({
+        where: { id: blogPost.id },
+        data: { views: { increment: 1 } }
+      })
+    }
 
     // Format response
     const responseData = {

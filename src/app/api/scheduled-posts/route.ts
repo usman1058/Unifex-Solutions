@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { successResponse, errorResponse, parsePaginationParams, calculatePaginationMeta } from '@/lib/api-utils'
-import { ensureAIConfigured, generateSocialPost, generateSocialSnippet } from '@/lib/ai'
+import { ensureAIConfigured, generateSocialPost, generateSocialSnippet, ngcDefaultTopTopics } from '@/lib/ai'
 import { requireAdmin } from '@/lib/admin-api'
 
 export const dynamic = 'force-dynamic'
@@ -58,6 +58,15 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+    const scheduledFor = new Date(body.scheduledFor)
+    if (!Number.isFinite(scheduledFor.getTime()) || scheduledFor.getTime() < Date.now() - 60_000) {
+      return NextResponse.json(errorResponse('VALIDATION_ERROR', 'scheduledFor must be a valid future datetime'), { status: 400 })
+    }
+    const allowedPlatforms = ['twitter', 'instagram', 'linkedin', 'facebook', 'tiktok', 'mastodon', 'blog', 'generic-webhook']
+    const platform = typeof body.platform === 'string' ? body.platform.toLowerCase() : 'twitter'
+    if (!allowedPlatforms.includes(platform)) {
+      return NextResponse.json(errorResponse('VALIDATION_ERROR', 'Unsupported social platform'), { status: 400 })
+    }
 
     let title = body.title || ''
     let content = body.content || ''
@@ -73,7 +82,7 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      const topic = body.topics?.[0] || body.title || 'latest software development trends'
+      const topic = body.topics?.[0] || body.title || ngcDefaultTopTopics()[new Date().getDay() % ngcDefaultTopTopics().length]
       const toneSetting = await db.appSetting.findUnique({ where: { key: 'ai_tone' } })
       const brandSetting = await db.appSetting.findUnique({ where: { key: 'ai_brand' } })
 
@@ -92,13 +101,13 @@ export async function POST(request: NextRequest) {
         content,
         originalPrompt: body.originalPrompt,
         topics: body.topics ? JSON.stringify(body.topics) : undefined,
-        platform: body.platform || 'twitter',
+        platform,
         accountId: body.accountId || undefined,
         link: body.link,
         imageUrl: body.imageUrl,
         hashtags: body.hashtags ? JSON.stringify(body.hashtags) : undefined,
-        scheduledFor: new Date(body.scheduledFor),
-        status: body.status || 'scheduled',
+        scheduledFor,
+        status: 'scheduled',
         aiEnabled,
         aiModel: body.aiModel,
         aiProvider: body.aiProvider,

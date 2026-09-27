@@ -38,6 +38,16 @@ const STATUS_LABELS: Record<string, { text: string; cls: string }> = {
   cancelled: { text: 'Cancelled', cls: 'bg-gray-500/10 text-gray-500 border-gray-500/30' },
 }
 
+function displayTopics(value: string | null | undefined): string {
+  if (!value) return ''
+  try {
+    const parsed = JSON.parse(value)
+    return Array.isArray(parsed) ? parsed.filter((item) => typeof item === 'string').join(', ') : ''
+  } catch {
+    return ''
+  }
+}
+
 export default function AdminSocialPage() {
   const [posts, setPosts] = useState<ScheduledPost[]>([])
   const [loading, setLoading] = useState(true)
@@ -309,7 +319,7 @@ export default function AdminSocialPage() {
                       <div className="font-medium truncate">{p.title}</div>
                       {p.topics && (
                         <div className="text-xs text-muted-foreground truncate">
-                          {JSON.parse(p.topics).join(', ')}
+                          {displayTopics(p.topics)}
                         </div>
                       )}
                     </td>

@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { successResponse, errorResponse } from '@/lib/api-utils'
+import { requireAdmin } from '@/lib/admin-api'
 
 export const dynamic = 'force-dynamic'
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
   try {
     const { id } = await params
     const existing = await db.socialAccount.findUnique({ where: { id } })

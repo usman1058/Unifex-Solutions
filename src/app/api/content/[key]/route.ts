@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { successResponse, errorResponse } from '@/lib/api-utils'
+import { requireAdmin } from '@/lib/admin-api'
 
 // GET /api/content/[key] - Get single content item by key
 export async function GET(
@@ -41,6 +42,8 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ key: string }> }
 ) {
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
   try {
     const { key } = await params
     const body = await request.json()
@@ -91,6 +94,8 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ key: string }> }
 ) {
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
   try {
     const { key } = await params
     // Check if content exists

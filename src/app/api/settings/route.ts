@@ -5,31 +5,29 @@ import { requireAdmin } from '@/lib/admin-api'
 
 export const dynamic = 'force-dynamic'
 
-const PUBLIC_KEYS = [
-  'ai_provider',
-  'ai_model',
-  'ai_base_url',
-  'ai_tone',
-  'ai_brand',
-  'social_default_platform',
-]
+const SECRET_KEYS = new Set([
+  'ai_api_key',
+  'image_api_key',
+  'scheduler_secret',
+])
 
-function maskSecret(value: string): string {
-  if (!value) return ''
-  return value.length > 8 ? `${value.slice(0, 4)}••••••••` : '••••••••'
-}
-
-// GET /api/settings - List settings (secrets masked unless ?unmask=true)
-export async function GET(request: NextRequest) {
+// GET /api/settings - List settings without ever returning secret values.
+// The client only needs to know whether a secret exists; it must never receive
+// even a prefix or an unmask option.
+export async function GET(_request: NextRequest) {
   const unauthorized = await requireAdmin()
   if (unauthorized) return unauthorized
   try {
-    const unmask = request.nextUrl.searchParams.get('unmask') === 'true'
     const settings = await db.appSetting.findMany({ orderBy: { category: 'asc' } })
 
     const data = settings.map((s) => ({
-      ...s,
-      value: s.type === 'secret' && !unmask ? maskSecret(s.value) : s.value,
+      id: s.id,
+      key: s.key,
+      value: s.type === 'secret' || SECRET_KEYS.has(s.key) ? '' : s.value,
+      type: SECRET_KEYS.has(s.key) ? 'secret' : s.type,
+      category: s.category,
+      description: s.description,
+      ...(s.type === 'secret' || SECRET_KEYS.has(s.key) ? { hasValue: Boolean(s.value) } : {}),
     }))
 
     return NextResponse.json(successResponse(data))
@@ -71,7 +69,7 @@ export async function POST(request: NextRequest) {
             where: { key: item.key },
             data: {
               value: item.value,
-              type: item.type || existing.type,
+              type: SECRET_KEYS.has(item.key) ? 'secret' : item.type || existing.type,
               category: item.category || existing.category,
               description: item.description ?? existing.description,
             },
@@ -80,12 +78,18 @@ export async function POST(request: NextRequest) {
             data: {
               key: item.key,
               value: item.value,
-              type: item.type || 'text',
+              type: SECRET_KEYS.has(item.key) ? 'secret' : item.type || 'text',
               category: item.category || 'general',
               description: item.description,
             },
           })
-      results.push(result)
+      results.push({
+        id: result.id,
+        key: result.key,
+        type: result.type,
+        category: result.category,
+        ...(result.type === 'secret' || SECRET_KEYS.has(result.key) ? { hasValue: true } : {}),
+      })
     }
 
     return NextResponse.json(

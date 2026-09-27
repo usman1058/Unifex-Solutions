@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { successResponse, errorResponse } from '@/lib/api-utils'
+import { requireAdmin } from '@/lib/admin-api'
 
 // GET /api/content - Get all site content or filter by section
 export async function GET(request: NextRequest) {
@@ -41,6 +42,8 @@ export async function GET(request: NextRequest) {
 
 // POST /api/content - Create or update site content
 export async function POST(request: NextRequest) {
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
   try {
     const body = await request.json()
 

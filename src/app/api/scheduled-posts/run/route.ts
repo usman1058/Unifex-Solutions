@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { successResponse, errorResponse } from '@/lib/api-utils'
-import { ensureAIConfigured, generateSocialPost, generateSocialSnippet } from '@/lib/ai'
+import { ensureAIConfigured, generateBlogImageUrl, generateSocialPost, generateSocialSnippet, ngcDefaultTopTopics } from '@/lib/ai'
 import { generateSlug as baseSlug } from '@/lib/api-utils'
-import { requireAdmin } from '@/lib/admin-api'
+import { requireAdminOrScheduler } from '@/lib/admin-api'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
@@ -14,10 +14,15 @@ export const maxDuration = 60
 // (picking up the "latest topics"). Then it's marked published and an
 // optional blog post record is created in the blog registry.
 export async function POST(request: NextRequest) {
-  const unauthorized = await requireAdmin()
+  const unauthorized = await requireAdminOrScheduler(request)
   if (unauthorized) return unauthorized
   try {
     const now = new Date()
+    const staleBefore = new Date(now.getTime() - 15 * 60 * 1000)
+    await db.scheduledPost.updateMany({
+      where: { status: 'processing', updatedAt: { lt: staleBefore } },
+      data: { status: 'scheduled' },
+    })
     const due = await db.scheduledPost.findMany({
       where: {
         status: 'scheduled',
@@ -43,10 +48,18 @@ export async function POST(request: NextRequest) {
 
     for (const post of due) {
       try {
+        const claim = await db.scheduledPost.updateMany({
+          where: { id: post.id, status: 'scheduled' },
+          data: { status: 'processing' },
+        })
+        if (claim.count !== 1) continue
+
         let content = post.content
         let title = post.title
         const topics: string[] = post.topics ? JSON.parse(post.topics) : []
-        const topic = topics[0] || title || 'latest software development trends'
+        const defaults = ngcDefaultTopTopics()
+        const topic = topics[0] || title || defaults[Math.floor(Date.now() / 86_400_000) % defaults.length]
+        let imageUrl = post.imageUrl
 
         // If AI enabled and no concrete content, generate at publish time.
         if (post.aiEnabled) {
@@ -68,6 +81,9 @@ export async function POST(request: NextRequest) {
               post.content ||
               `${topic} — the latest insight from Unifex Solutions. Stay tuned for more ${post.platform} updates. #tech #software`
           }
+          if (!imageUrl) {
+            imageUrl = await generateBlogImageUrl(topic)
+          }
         }
 
         // Publish the record (mark it published).
@@ -78,6 +94,7 @@ export async function POST(request: NextRequest) {
             publishedAt: new Date(),
             content,
             title,
+            imageUrl,
             error: null,
           },
         })
@@ -95,6 +112,7 @@ export async function POST(request: NextRequest) {
                 title: title || post.title,
                 excerpt: stripHtml(content).slice(0, 160),
                 content,
+                coverImage: imageUrl,
                 author: 'Unifex AI Editor',
                 readTime: Math.max(1, Math.ceil(stripHtml(content).split(/\s+/).length / 200)),
                 published: true,

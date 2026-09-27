@@ -8,7 +8,11 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const { page, limit, sortBy, sortOrder } = parsePaginationParams(searchParams)
-    const published = searchParams.get('published')
+    const published = searchParams.get('published') ?? 'true'
+    if (published === 'false') {
+      const unauthorized = await requireAdmin()
+      if (unauthorized) return unauthorized
+    }
     const featured = searchParams.get('featured')
     const search = searchParams.get('search')
 

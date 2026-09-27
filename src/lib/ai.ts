@@ -1,9 +1,22 @@
 import { db } from '@/lib/db'
+import { createFallbackBlogImage, storeGeneratedImage } from '@/lib/media'
 
-export type AIProvider = 'openai' | 'anthropic' | 'google' | 'custom'
+export type AIProvider = 'local' | 'openai' | 'anthropic' | 'google' | 'custom'
+
+export const LOCAL_AI_MODEL = 'Xenova/LaMini-Flan-T5-77M'
+export const DEFAULT_IMAGE_MODEL = 'black-forest-labs/FLUX.1-schnell'
+
+export type ImageProvider = 'fallback' | 'gemini' | 'huggingface' | 'custom'
 
 export interface AIConfig {
   provider: AIProvider
+  apiKey: string
+  model: string
+  baseUrl: string
+}
+
+export interface ImageConfig {
+  provider: ImageProvider
   apiKey: string
   model: string
   baseUrl: string
@@ -18,7 +31,9 @@ export function ngcDefaultTopTopics(): string[] {
   ]
 }
 
-// Resolve AI configuration from the AppSetting store, falling back to env vars.
+// Resolve AI configuration from the AppSetting store. API keys are deliberately
+// settings-only so they are never copied from deployment environment variables
+// into request handling or client-visible configuration.
 export async function getAIConfig(): Promise<AIConfig> {
   const [provider, apiKey, model, baseUrl] = await Promise.all([
     db.appSetting.findUnique({ where: { key: 'ai_provider' } }),
@@ -27,16 +42,88 @@ export async function getAIConfig(): Promise<AIConfig> {
     db.appSetting.findUnique({ where: { key: 'ai_base_url' } }),
   ])
 
+  const storedProvider = provider?.value as AIProvider | undefined
+  const storedModel = model?.value || process.env.AI_MODEL || ''
+  const storedKey = apiKey?.value || ''
+  const legacySeed = storedProvider === 'openai' && !storedKey && (!model?.value || model.value === 'gpt-4o-mini')
   return {
-    provider: (provider?.value as AIProvider) || (process.env.AI_PROVIDER as AIProvider) || 'openai',
-    apiKey: apiKey?.value || process.env.AI_API_KEY || '',
-    model: model?.value || process.env.AI_MODEL || 'gpt-4o-mini',
+    provider: legacySeed ? 'local' : storedProvider || (process.env.AI_PROVIDER as AIProvider) || 'local',
+    apiKey: apiKey?.value || '',
+    model: legacySeed ? LOCAL_AI_MODEL : storedModel || LOCAL_AI_MODEL,
     baseUrl: baseUrl?.value || process.env.AI_BASE_URL || '',
   }
 }
 
+export async function getImageConfig(): Promise<ImageConfig> {
+  const [provider, apiKey, model, baseUrl] = await Promise.all([
+    db.appSetting.findUnique({ where: { key: 'image_provider' } }),
+    db.appSetting.findUnique({ where: { key: 'image_api_key' } }),
+    db.appSetting.findUnique({ where: { key: 'image_model' } }),
+    db.appSetting.findUnique({ where: { key: 'image_base_url' } }),
+  ])
+  return {
+    provider: (provider?.value as ImageProvider) || (process.env.IMAGE_PROVIDER as ImageProvider) || 'fallback',
+    apiKey: apiKey?.value || '',
+    model: model?.value || process.env.IMAGE_MODEL || (provider?.value === 'gemini' ? 'gemini-3.1-flash-image' : DEFAULT_IMAGE_MODEL),
+    baseUrl: baseUrl?.value || process.env.IMAGE_BASE_URL || '',
+  }
+}
+
+export async function generateBlogImageUrl(topic: string): Promise<string> {
+  const config = await getImageConfig()
+  if (!topic.trim()) throw new Error('Image topic is required')
+  if (!config.apiKey || config.provider === 'fallback') {
+    return storeGeneratedImage(createFallbackBlogImage(topic), 'image/svg+xml')
+  }
+
+  try {
+    const generated = config.provider === 'gemini'
+      ? await generateGeminiImage(topic, config)
+      : await generateHuggingFaceImage(topic, config)
+    return storeGeneratedImage(generated.data, generated.mimeType)
+  } catch {
+    // Do not log provider responses here: they can contain request metadata or
+    // sensitive diagnostics. The fallback keeps scheduled publishing reliable.
+    console.warn('[ai] Image generation failed; using branded fallback')
+    return storeGeneratedImage(createFallbackBlogImage(topic), 'image/svg+xml')
+  }
+}
+
+async function generateGeminiImage(topic: string, config: ImageConfig): Promise<{ data: Uint8Array; mimeType: string }> {
+  const model = config.model || 'gemini-3.1-flash-image'
+  const baseUrl = (config.baseUrl || 'https://generativelanguage.googleapis.com/v1beta').replace(/\/$/, '')
+  const response = await fetch(`${baseUrl}/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(config.apiKey)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: `Create a clean editorial blog cover image, 16:9 composition, no readable text, for this topic: ${topic}` }] }],
+      generationConfig: { responseModalities: ['IMAGE', 'TEXT'] },
+    }),
+  })
+  if (!response.ok) throw new Error(`Gemini image request failed (${response.status})`)
+  const body = await response.json()
+  const part = body.candidates?.[0]?.content?.parts?.find((item: any) => item.inlineData?.data)
+  if (!part?.inlineData?.data) throw new Error('Gemini returned no image')
+  return { data: Uint8Array.from(Buffer.from(part.inlineData.data, 'base64')), mimeType: part.inlineData.mimeType || 'image/png' }
+}
+
+async function generateHuggingFaceImage(topic: string, config: ImageConfig): Promise<{ data: Uint8Array; mimeType: string }> {
+  const baseUrl = (config.baseUrl || 'https://router.huggingface.co/hf-inference/models').replace(/\/$/, '')
+  const response = await fetch(`${baseUrl}/${config.model}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${config.apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ inputs: `Editorial blog cover, modern technology magazine style, 16:9, no text: ${topic}` }),
+  })
+  if (!response.ok) throw new Error(`Hugging Face image request failed (${response.status})`)
+  const mimeType = response.headers.get('content-type')?.split(';')[0] || 'image/png'
+  return { data: new Uint8Array(await response.arrayBuffer()), mimeType }
+}
+
 export async function ensureAIConfigured(): Promise<{ configured: boolean; provider: AIProvider; model: string; reason?: string }> {
   const cfg = await getAIConfig()
+  if (cfg.provider === 'local') {
+    return { configured: true, provider: 'local', model: cfg.model || LOCAL_AI_MODEL }
+  }
   if (!cfg?.apiKey) {
     return { configured: false, provider: cfg?.provider || 'openai', model: cfg?.model || '', reason: 'No AI API key configured. Add one in Admin → Settings.' }
   }
@@ -54,6 +141,9 @@ export async function chatCompletion(
   opts: { temperature?: number; maxTokens?: number } = {}
 ): Promise<string> {
   const cfg = await getAIConfig()
+  if (cfg.provider === 'local') {
+    return runLocalModel(messages.map((message) => `${message.role}: ${message.content}`).join('\n'), opts.maxTokens ?? 180)
+  }
   if (!cfg?.apiKey) {
     throw new Error('AI is not configured. Add an API key under Admin → Settings.')
   }
@@ -116,6 +206,21 @@ export async function chatCompletion(
   return extractText(data, cfg.provider, key)
 }
 
+let localGeneratorPromise: Promise<any> | null = null
+
+async function runLocalModel(prompt: string, maxTokens: number): Promise<string> {
+  if (!localGeneratorPromise) {
+    localGeneratorPromise = (async () => {
+      const { env, pipeline } = await import('@huggingface/transformers')
+      env.cacheDir = process.env.LOCAL_AI_CACHE_DIR || '.cache/transformers'
+      return pipeline('text2text-generation', LOCAL_AI_MODEL, { dtype: 'q4' })
+    })()
+  }
+  const generator = await localGeneratorPromise
+  const output = await generator(prompt, { max_new_tokens: Math.min(Math.max(maxTokens, 32), 256), temperature: 0.7 })
+  return String(output?.[0]?.generated_text || '').trim()
+}
+
 function normalizeBaseUrl(provider: AIProvider, baseUrl: string): string {
   if (baseUrl) return baseUrl.replace(/\/$/, '')
   switch (provider) {
@@ -156,13 +261,19 @@ export async function generateSocialPost(topic: string, ctx: { brand?: string; t
 
   const user = 'Topic: ' + topic + '\nTone: ' + tone + '\nReturn JSON:\n{"title":"...","content":"<p>...</p>"}'
 
-  const raw = await chatCompletion(
-    [
-      { role: 'system', content: sys },
-      { role: 'user', content: user },
-    ],
-    { temperature: 0.8, maxTokens: 700 }
-  )
+  let raw = ''
+  try {
+    raw = await chatCompletion(
+      [
+        { role: 'system', content: sys },
+        { role: 'user', content: user },
+      ],
+      { temperature: 0.8, maxTokens: 700 }
+    )
+  } catch (error) {
+    if ((await getAIConfig()).provider !== 'local') throw error
+    return localFallbackSocialPost(topic, brand, maxWords)
+  }
 
   try {
     const cleaned = raw.trim().replace(/```(json)?/gi, '').trim()
@@ -173,7 +284,16 @@ export async function generateSocialPost(topic: string, ctx: { brand?: string; t
     }
   } catch {
     // Fallback: treat entire output as content with a generic title.
-    return { title: topic, content: `<p>${raw}</p>` }
+    return { title: topic, content: `<p>${raw || `A practical look at ${topic}.`}</p>` }
+  }
+}
+
+function localFallbackSocialPost(topic: string, brand: string, maxWords: number) {
+  const safeTopic = topic.replace(/[<>]/g, '').trim() || 'software delivery'
+  const content = `${safeTopic} deserves a clear plan, measurable outcomes, and secure execution. ${brand} helps teams turn complex digital work into reliable systems with practical next steps.`
+  return {
+    title: safeTopic.slice(0, 90),
+    content: `<p>${content.split(/\s+/).slice(0, maxWords).join(' ')}</p>`,
   }
 }
 
@@ -186,13 +306,14 @@ export async function generateSocialSnippet(topic: string, platform: string, max
   ].join(' ')
 
   try {
-    return await chatCompletion(
+    const result = await chatCompletion(
       [
         { role: 'system', content: sys },
         { role: 'user', content: `Write the ${platform} post now.` },
       ],
       { temperature: 0.9, maxTokens: 200 }
     )
+    return result.slice(0, maxChars).trim()
   } catch {
     return `${topic}#tech #software #cybersecurity`
   }

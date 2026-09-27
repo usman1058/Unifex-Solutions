@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Save, Loader2, CheckCircle2, Bug, Trash2 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { Save, Loader2, CheckCircle2, Bug, Trash2, Info, X } from 'lucide-react'
 import IntegrationsManager from '@/components/admin/integrations-manager'
 
 interface Setting {
@@ -12,22 +11,35 @@ interface Setting {
   type: string
   category: string
   description?: string | null
+  hasValue?: boolean
 }
 
 const PROVIDERS = [
+  { value: 'local', label: 'Local open-source model (no API key)' },
   { value: 'openai', label: 'OpenAI (gpt-4o, gpt-4o-mini)' },
   { value: 'anthropic', label: 'Anthropic (Claude)' },
   { value: 'google', label: 'Google (Gemini)' },
   { value: 'custom', label: 'Custom / OpenAI-compatible' },
 ]
 
+const IMAGE_PROVIDERS = [
+  { value: 'fallback', label: 'Built-in branded fallback (no key)' },
+  { value: 'gemini', label: 'Google Gemini image generation' },
+  { value: 'huggingface', label: 'Hugging Face Inference Providers' },
+  { value: 'custom', label: 'Custom image endpoint' },
+]
+
 const DEFAULT_FIELDS = {
   ai_provider: { type: 'text', category: 'ai', description: 'Primary AI provider' },
   ai_api_key: { type: 'secret', category: 'ai', description: 'API key for the chosen provider' },
-  ai_model: { type: 'text', category: 'ai', description: 'Model name, e.g. gpt-4o-mini or claude-3-5-sonnet' },
+  ai_model: { type: 'text', category: 'ai', description: 'Model name; local default is Xenova/LaMini-Flan-T5-77M' },
   ai_base_url: { type: 'text', category: 'ai', description: 'Optional custom base URL for custom providers' },
   ai_tone: { type: 'text', category: 'ai', description: 'Tone used for AI-generated content' },
   ai_brand: { type: 'text', category: 'ai', description: 'Your agency / brand name for AI context' },
+  image_provider: { type: 'text', category: 'ai', description: 'Image provider: fallback, gemini, huggingface, or custom' },
+  image_api_key: { type: 'secret', category: 'ai', description: 'Image provider API key' },
+  image_model: { type: 'text', category: 'ai', description: 'Image model, e.g. gemini-3.1-flash-image or black-forest-labs/FLUX.1-schnell' },
+  image_base_url: { type: 'text', category: 'ai', description: 'Optional custom image endpoint' },
   bank_account_name: { type: 'text', category: 'bank', description: 'Bank account holder / beneficiary name' },
   bank_account_number: { type: 'text', category: 'bank', description: 'Bank account number' },
   bank_sort_code: { type: 'text', category: 'bank', description: 'Bank sort code / routing number' },
@@ -38,13 +50,14 @@ const DEFAULT_FIELDS = {
 } as const
 
 export default function AdminSettingsPage() {
-  const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
   const [values, setValues] = useState<Record<string, string>>({})
+  const [storedSecrets, setStoredSecrets] = useState<Record<string, boolean>>({})
   const [clearingKey, setClearingKey] = useState('')
+  const [helpOpen, setHelpOpen] = useState(false)
 
   useEffect(() => {
     fetchSettings()
@@ -53,11 +66,15 @@ export default function AdminSettingsPage() {
   const fetchSettings = async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/settings?unmask=true')
+      const res = await fetch('/api/settings')
       const data = await res.json()
       const map: Record<string, string> = {}
+      const secrets: Record<string, boolean> = {}
       if (data.success && data.data) {
-        for (const s of data.data) map[s.key] = s.value
+        for (const s of data.data as Setting[]) {
+          map[s.key] = s.type === 'secret' ? '' : s.value
+          if (s.type === 'secret' && s.hasValue) secrets[s.key] = true
+        }
       }
       // seed defaults
       for (const key of Object.keys(DEFAULT_FIELDS)) {
@@ -67,6 +84,7 @@ export default function AdminSettingsPage() {
       if (map.ai_brand === '') map.ai_brand = 'Unifex Solutions'
       if (map.bank_account_name === '') map.bank_account_name = 'Unifex Solutions Ltd'
       setValues(map)
+      setStoredSecrets(secrets)
     } catch (e) {
       setError('Failed to load settings')
     } finally {
@@ -115,8 +133,12 @@ export default function AdminSettingsPage() {
   const handleClear = async (key: string) => {
     setClearingKey(key)
     try {
-      await fetch('/api/settings?key=' + encodeURIComponent(key), { method: 'DELETE' }).catch(() => {})
+      const res = await fetch('/api/settings?key=' + encodeURIComponent(key), { method: 'DELETE' })
+      if (!res.ok) throw new Error('Unable to clear setting')
       setValues((prev) => ({ ...prev, [key]: '' }))
+      setStoredSecrets((prev) => ({ ...prev, [key]: false }))
+    } catch {
+      setError('Unable to clear stored key')
     } finally {
       setClearingKey('')
     }
@@ -146,7 +168,12 @@ export default function AdminSettingsPage() {
       <div className="space-y-6">
         {/* AI Provider */}
         <div className="bg-card border rounded-lg p-6">
-          <h2 className="text-xl font-bold mb-1">AI Provider</h2>
+          <div className="flex items-start justify-between gap-4 mb-1">
+            <h2 className="text-xl font-bold">AI Provider</h2>
+            <button type="button" onClick={() => setHelpOpen(true)} className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline whitespace-nowrap">
+              <Info className="w-4 h-4" /> How to get keys
+            </button>
+          </div>
           <p className="text-sm text-muted-foreground mb-6">
             Your API key powers the Auto-Post system. Keys are stored in the database only — never in the frontend.
           </p>
@@ -155,7 +182,7 @@ export default function AdminSettingsPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Provider</label>
               <select
-                value={values.ai_provider || 'openai'}
+                value={values.ai_provider || 'local'}
                 onChange={(e) => setValues((prev) => ({ ...prev, ai_provider: e.target.value }))}
                 className="w-full bg-background border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               >
@@ -174,7 +201,10 @@ export default function AdminSettingsPage() {
                 onChange={(e) => setValues((prev) => ({ ...prev, ai_api_key: e.target.value }))}
                 className="w-full bg-background border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />
-              {values.ai_api_key && (
+              {(values.ai_api_key || storedSecrets.ai_api_key) && (
+                <p className="text-xs text-muted-foreground">{values.ai_api_key ? 'New key entered; save settings to replace the stored key.' : 'A key is already stored securely. Leave blank to keep it unchanged.'}</p>
+              )}
+              {storedSecrets.ai_api_key && !values.ai_api_key && (
                 <button
                   onClick={() => handleClear('ai_api_key')}
                   className="inline-flex items-center gap-1.5 text-xs text-red-500 hover:text-red-400 mt-1"
@@ -188,7 +218,7 @@ export default function AdminSettingsPage() {
               <label className="text-sm font-medium">Model</label>
               <input
                 type="text"
-                placeholder="gpt-4o-mini"
+                placeholder="Xenova/LaMini-Flan-T5-77M"
                 value={values.ai_model || ''}
                 onChange={(e) => setValues((prev) => ({ ...prev, ai_model: e.target.value }))}
                 className="w-full bg-background border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
@@ -204,6 +234,21 @@ export default function AdminSettingsPage() {
                 onChange={(e) => setValues((prev) => ({ ...prev, ai_base_url: e.target.value }))}
                 className="w-full bg-background border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />
+            </div>
+
+            <div className="border-t pt-6">
+              <h3 className="mb-1 font-semibold">Blog image generation</h3>
+              <p className="mb-4 text-xs text-muted-foreground">AI-generated blog covers are stored in the app uploads folder. Without a key, the system uses a branded SVG fallback so scheduled posts still work.</p>
+              <div className="space-y-4">
+                <select value={values.image_provider || 'fallback'} onChange={(e) => setValues((prev) => ({ ...prev, image_provider: e.target.value }))} className="w-full bg-background border rounded-lg px-3 py-2.5 text-sm">
+                  {IMAGE_PROVIDERS.map((provider) => <option key={provider.value} value={provider.value}>{provider.label}</option>)}
+                </select>
+                <input type="password" placeholder="Gemini or Hugging Face image API key (optional)" value={values.image_api_key || ''} onChange={(e) => setValues((prev) => ({ ...prev, image_api_key: e.target.value }))} className="w-full bg-background border rounded-lg px-3 py-2.5 text-sm" />
+                {(values.image_api_key || storedSecrets.image_api_key) && <p className="text-xs text-muted-foreground">{values.image_api_key ? 'New key entered; save settings to replace the stored key.' : 'A key is already stored securely. Leave blank to keep it unchanged.'}</p>}
+                {storedSecrets.image_api_key && !values.image_api_key && <button type="button" onClick={() => handleClear('image_api_key')} className="inline-flex items-center gap-1.5 text-xs text-red-500 hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /> Clear stored image key</button>}
+                <input type="text" placeholder="gemini-3.1-flash-image or black-forest-labs/FLUX.1-schnell" value={values.image_model || ''} onChange={(e) => setValues((prev) => ({ ...prev, image_model: e.target.value }))} className="w-full bg-background border rounded-lg px-3 py-2.5 text-sm" />
+                <input type="url" placeholder="Optional custom image endpoint" value={values.image_base_url || ''} onChange={(e) => setValues((prev) => ({ ...prev, image_base_url: e.target.value }))} className="w-full bg-background border rounded-lg px-3 py-2.5 text-sm" />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -336,6 +381,25 @@ export default function AdminSettingsPage() {
           </button>
         </div>
       </div>
+
+      {helpOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="dialog" aria-modal="true" aria-labelledby="ai-help-title" onClick={() => setHelpOpen(false)}>
+          <div className="max-w-lg w-full rounded-xl border bg-card p-6 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <h2 id="ai-help-title" className="text-xl font-bold">AI setup guide</h2>
+              <button type="button" aria-label="Close setup guide" onClick={() => setHelpOpen(false)}><X className="w-5 h-5" /></button>
+            </div>
+            <div className="space-y-4 text-sm text-muted-foreground">
+              <p><strong className="text-foreground">Local AI:</strong> choose the local provider. It needs no key; the lightweight model is downloaded and cached on first use.</p>
+              <p><strong className="text-foreground">Gemini:</strong> create a key in <a className="text-primary underline" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer">Google AI Studio</a>, paste it into the matching key field, then save. Use a model enabled for your account.</p>
+              <p><strong className="text-foreground">Hugging Face:</strong> create an inference token in <a className="text-primary underline" href="https://huggingface.co/settings/tokens" target="_blank" rel="noreferrer">Hugging Face settings</a>. For images, use a supported text-to-image model such as <code>black-forest-labs/FLUX.1-schnell</code>.</p>
+              <p><strong className="text-foreground">Custom:</strong> enter the provider’s OpenAI-compatible base URL or image endpoint and its key. Keys are stored server-side and never returned to the browser.</p>
+              <p>If a provider fails, the system keeps the workflow alive with local text fallback or a branded blog-image fallback.</p>
+            </div>
+            <button type="button" onClick={() => setHelpOpen(false)} className="mt-6 w-full rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground">Got it</button>
+          </div>
+        </div>
+      )}
 
       {/* Save bar */}
       <div className="sticky bottom-6 mt-8 flex items-center justify-end gap-3 bg-card border rounded-xl p-4 shadow-lg">

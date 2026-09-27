@@ -5,11 +5,12 @@ import { useEffect, useRef, useState } from 'react'
 export function MouseFollower() {
   const cursorRef = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(false)
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mediaQuery.matches)
     const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
     mediaQuery.addEventListener('change', handler)
     return () => mediaQuery.removeEventListener('change', handler)
@@ -84,13 +85,14 @@ export function MouseFollower() {
   if (prefersReducedMotion) return null
 
   return (
-    <div 
-      ref={cursorRef} 
-      aria-hidden="true" 
-      className="unifex-cursor"
-      style={{ opacity: 0 }}
-    >
-      <span className="unifex-cursor-core" />
-    </div>
-  )
-}
+      <div
+        ref={cursorRef}
+        aria-hidden="true"
+        className="unifex-cursor"
+        data-active={isVisible ? 'true' : 'false'}
+      >
+        <span className="unifex-cursor-core" />
+        <span className="unifex-cursor-label" />
+      </div>
+    )
+  }

@@ -4,10 +4,7 @@ const nextConfig: NextConfig = {
   output: "standalone",
   compress: true,
   poweredByHeader: false,
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  reactStrictMode: false,
+  reactStrictMode: true,
   experimental: {
     // Keep Turbopack's persistent cache across restarts and production builds.
     // Avoid Windows EPERM failures when Next starts the default worker pool.

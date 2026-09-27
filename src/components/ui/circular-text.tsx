@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { motion, useAnimation, useMotionValue } from 'framer-motion';
+import { motion, useAnimation, useMotionValue, type MotionValue } from 'framer-motion';
 
 import './circular-text.css';
 

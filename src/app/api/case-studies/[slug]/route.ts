@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { successResponse, errorResponse, generateSlug } from '@/lib/api-utils'
+import { requireAdmin } from '@/lib/admin-api'
 
 export const dynamic = 'force-dynamic'
 
@@ -63,6 +64,8 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
   try {
     const { slug: paramSlug } = await params
     const body = await request.json()
@@ -181,6 +184,8 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
   try {
     const { slug } = await params
     // Check if case study exists

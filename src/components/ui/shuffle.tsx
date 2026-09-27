@@ -405,7 +405,7 @@ const Shuffle: React.FC<ShuffleProps> = ({
 
   const commonStyle: React.CSSProperties = useMemo(() => ({ textAlign, ...style }), [textAlign, style]);
   const classes = useMemo(() => `shuffle-parent ${ready ? 'is-ready' : ''} ${className}`, [ready, className]);
-  const Tag = (tag || 'p') as keyof JSX.IntrinsicElements;
+  const Tag = (tag || 'p') as React.ElementType;
   return React.createElement(Tag, { ref: ref as any, className: classes, style: commonStyle }, text);
 };
 

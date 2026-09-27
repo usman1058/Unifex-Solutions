@@ -142,7 +142,7 @@ export function Hero3DTiltCard() {
               </span>
               <span className="text-emerald-400">● EXECUTION SUCCESS</span>
             </div>
-            <p className="text-on-surface-variant">// Initializing Unifex Enterprise Stack</p>
+            <p className="text-on-surface-variant">&#x2F;&#x2F; Initializing Unifex Enterprise Stack</p>
             <p><span className="text-purple-400">import</span> &#123; KineticCore &#125; <span className="text-purple-400">from</span> <span className="text-emerald-300">&apos;@unifex/core&apos;</span>;</p>
             <p><span className="text-blue-400">export const</span> app = <span className="text-yellow-400">new</span> KineticCore(&#123;</p>
             <p className="pl-4">security: <span className="text-emerald-300">&apos;ZERO_TRUST_STRICT&apos;</span>,</p>

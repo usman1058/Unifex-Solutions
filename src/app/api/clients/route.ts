@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { successResponse, errorResponse } from '@/lib/api-utils'
+import { requireAdmin } from '@/lib/admin-api'
 
 // GET /api/clients - List all clients
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
-    const published = searchParams.get('published')
+    const published = searchParams.get('published') ?? 'true'
+    if (published === 'false') {
+      const unauthorized = await requireAdmin()
+      if (unauthorized) return unauthorized
+    }
     const featured = searchParams.get('featured')
 
     const where: any = {}
@@ -34,6 +39,8 @@ export async function GET(request: NextRequest) {
 
 // POST /api/clients - Create a new client
 export async function POST(request: NextRequest) {
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
   try {
     const body = await request.json()
 

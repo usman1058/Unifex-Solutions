@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Clock,
   ClipboardList
+  ,Film
 } from 'lucide-react'
 
 interface Stats {
@@ -103,6 +104,13 @@ export default function AdminDashboardPage() {
       icon: ClipboardList,
       color: 'bg-cyan-500',
       href: '/admin/orders'
+    }
+    ,{
+      title: 'Video Clipper',
+      value: 'Open',
+      icon: Film,
+      color: 'bg-pink-500',
+      href: '/admin/video'
     }
   ]
 

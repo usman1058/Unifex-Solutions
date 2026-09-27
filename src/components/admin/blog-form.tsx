@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Save, ArrowLeft } from 'lucide-react'
+import { Save, ArrowLeft, Sparkles, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
@@ -29,6 +29,7 @@ export default function BlogForm({ post, isEditing = false }: BlogFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [categories, setCategories] = useState<any[]>([])
+  const [generating, setGenerating] = useState(false)
 
   const [formData, setFormData] = useState<BlogFormData>({
     slug: post?.slug || '',
@@ -101,6 +102,38 @@ export default function BlogForm({ post, isEditing = false }: BlogFormProps) {
       toast.error('Save Failed', { description: 'An unexpected error occurred. Please try again.' })
     } finally {
       setLoading(false)
+    }
+  }
+
+  const generateDraft = async () => {
+    const topic = formData.title.trim()
+    if (!topic) {
+      setError('Enter a topic or working title before generating a draft.')
+      return
+    }
+    setGenerating(true)
+    setError('')
+    try {
+      const response = await fetch('/api/blog/ai/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic, generateImage: true }),
+      })
+      const data = await response.json()
+      if (!response.ok || !data.success) throw new Error(data.error?.message || 'AI generation failed')
+      setFormData((current) => ({
+        ...current,
+        title: data.data.title || current.title,
+        slug: current.slug || String(data.data.title || current.title).toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''),
+        excerpt: data.data.excerpt || current.excerpt,
+        content: data.data.content || current.content,
+        coverImage: data.data.coverImage || current.coverImage,
+      }))
+      toast.success('AI draft ready', { description: 'Review the content and image before publishing.' })
+    } catch (generationError: any) {
+      setError(generationError?.message || 'AI generation failed')
+    } finally {
+      setGenerating(false)
     }
   }
 
@@ -184,7 +217,13 @@ export default function BlogForm({ post, isEditing = false }: BlogFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Content (HTML) *</label>
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <label className="block text-sm font-medium">Content (HTML) *</label>
+              <button type="button" onClick={generateDraft} disabled={generating} className="inline-flex items-center gap-2 rounded-lg border border-primary/40 px-3 py-2 text-xs font-semibold text-primary hover:bg-primary/10 disabled:opacity-50">
+                {generating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                {generating ? 'Generating…' : 'Generate content + image'}
+              </button>
+            </div>
             <textarea
               value={formData.content}
               onChange={(e) => setFormData({ ...formData, content: e.target.value })}
