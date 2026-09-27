@@ -28,7 +28,14 @@ interface ScheduledPost {
   error?: string | null
 }
 
-const PLATFORMS = ['twitter', 'linkedin', 'facebook', 'instagram', 'tiktok', 'mastodon', 'blog']
+interface SocialAccount {
+  id: string
+  name: string
+  platform: string
+  enabled: boolean
+}
+
+const PLATFORMS = ['twitter', 'linkedin', 'facebook', 'instagram', 'tiktok', 'mastodon', 'youtube', 'blog']
 
 const STATUS_LABELS: Record<string, { text: string; cls: string }> = {
   scheduled: { text: 'Scheduled', cls: 'bg-blue-500/10 text-blue-500 border-blue-500/30' },
@@ -50,6 +57,7 @@ function displayTopics(value: string | null | undefined): string {
 
 export default function AdminSocialPage() {
   const [posts, setPosts] = useState<ScheduledPost[]>([])
+  const [accounts, setAccounts] = useState<SocialAccount[]>([])
   const [loading, setLoading] = useState(true)
   const [showNew, setShowNew] = useState(false)
   const [error, setError] = useState('')
@@ -65,6 +73,8 @@ export default function AdminSocialPage() {
     time: '09:00',
     aiEnabled: true,
     topics: '',
+    link: '',
+    accountId: '',
   })
 
   const loadPosts = async () => {
@@ -80,8 +90,19 @@ export default function AdminSocialPage() {
     }
   }
 
+  const loadAccounts = async () => {
+    try {
+      const response = await fetch('/api/social-accounts')
+      const data = await response.json()
+      if (data.success) setAccounts(data.data || [])
+    } catch {
+      setAccounts([])
+    }
+  }
+
   useEffect(() => {
     loadPosts()
+    loadAccounts()
   }, [])
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -102,12 +123,14 @@ export default function AdminSocialPage() {
         scheduledFor: scheduledFor.toISOString(),
         aiEnabled: form.aiEnabled,
         topics,
+        link: form.link || undefined,
+        accountId: form.accountId || undefined,
       }),
     })
     const data = await res.json()
     if (res.ok && data.success) {
       setShowNew(false)
-      setForm({ title: '', content: '', platform: 'instagram', date: '', time: '09:00', aiEnabled: true, topics: '' })
+      setForm({ title: '', content: '', platform: 'instagram', date: '', time: '09:00', aiEnabled: true, topics: '', link: '', accountId: '' })
       loadPosts()
     } else {
       setRunning(data.error?.message || 'Failed to schedule post')
@@ -227,6 +250,21 @@ export default function AdminSocialPage() {
             </div>
 
             <div className="space-y-2">
+              <label className="text-sm font-medium">Connected account</label>
+              <select
+                value={form.accountId}
+                onChange={(e) => setForm({ ...form, accountId: e.target.value })}
+                className="w-full bg-background border rounded-lg px-3 py-2.5 text-sm"
+              >
+                <option value="">No external account / internal blog</option>
+                {accounts.filter((account) => account.platform === form.platform && account.enabled).map((account) => (
+                  <option key={account.id} value={account.id}>{account.name}</option>
+                ))}
+              </select>
+              {['facebook', 'linkedin', 'youtube'].includes(form.platform) && !accounts.some((account) => account.platform === form.platform && account.enabled) && <p className="text-xs text-amber-500">Connect an enabled {form.platform} account in Settings before running this post.</p>}
+            </div>
+
+            <div className="space-y-2">
               <label className="text-sm font-medium flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-primary" /> AI Auto-Generate
               </label>
@@ -261,6 +299,11 @@ export default function AdminSocialPage() {
                 className="w-full bg-background border rounded-lg px-3 py-2.5 text-sm"
               />
             </div>
+          </div>
+
+          <div className="space-y-2 mt-4">
+            <label className="text-sm font-medium">Blog/article URL (optional)</label>
+            <input value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} type="url" placeholder="https://your-site.com/blog/article" className="w-full bg-background border rounded-lg px-3 py-2.5 text-sm" />
           </div>
 
           {!form.aiEnabled && (

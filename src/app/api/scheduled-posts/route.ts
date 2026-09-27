@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     if (!Number.isFinite(scheduledFor.getTime()) || scheduledFor.getTime() < Date.now() - 60_000) {
       return NextResponse.json(errorResponse('VALIDATION_ERROR', 'scheduledFor must be a valid future datetime'), { status: 400 })
     }
-    const allowedPlatforms = ['twitter', 'instagram', 'linkedin', 'facebook', 'tiktok', 'mastodon', 'blog', 'generic-webhook']
+    const allowedPlatforms = ['twitter', 'instagram', 'linkedin', 'facebook', 'tiktok', 'mastodon', 'youtube', 'blog', 'generic-webhook']
     const platform = typeof body.platform === 'string' ? body.platform.toLowerCase() : 'twitter'
     if (!allowedPlatforms.includes(platform)) {
       return NextResponse.json(errorResponse('VALIDATION_ERROR', 'Unsupported social platform'), { status: 400 })

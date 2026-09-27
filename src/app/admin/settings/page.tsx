@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Save, Loader2, CheckCircle2, Bug, Trash2, Info, X } from 'lucide-react'
 import IntegrationsManager from '@/components/admin/integrations-manager'
+import SocialAccountSettings from '@/components/admin/social-account-settings'
 
 interface Setting {
   id: string
@@ -352,6 +353,7 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Integrations */}
+        <SocialAccountSettings />
         <IntegrationsManager />
 
         {/* Test connection */}

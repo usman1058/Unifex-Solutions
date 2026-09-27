@@ -4,6 +4,7 @@ import { successResponse, errorResponse } from '@/lib/api-utils'
 import { ensureAIConfigured, generateBlogImageUrl, generateSocialPost, generateSocialSnippet, ngcDefaultTopTopics } from '@/lib/ai'
 import { generateSlug as baseSlug } from '@/lib/api-utils'
 import { requireAdminOrScheduler } from '@/lib/admin-api'
+import { publishScheduledPost } from '@/lib/social-publishing'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
@@ -86,8 +87,16 @@ export async function POST(request: NextRequest) {
           }
         }
 
+        const account = post.accountId
+          ? await db.socialAccount.findUnique({ where: { id: post.accountId } })
+          : null
+        if (['facebook', 'linkedin', 'youtube', 'generic-webhook'].includes(post.platform) && !account) {
+          throw new Error(`No connected ${post.platform} account is configured`)
+        }
+        await publishScheduledPost({ ...post, content, title, imageUrl } as typeof post, account)
+
         // Publish the record (mark it published).
-        const finished = await db.scheduledPost.update({
+        await db.scheduledPost.update({
           where: { id: post.id },
           data: {
             status: 'published',

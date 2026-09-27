@@ -25,35 +25,11 @@ export function MouseFollower() {
     // and when reduced-motion settings disable the custom cursor.
     document.body.dataset.customCursor = 'true'
 
-    let frame = 0
-    let x = window.innerWidth / 2
-    let y = window.innerHeight / 2
-    let targetX = x
-    let targetY = y
-    let isMoving = false
-
-    const render = () => {
-      const dx = targetX - x
-      const dy = targetY - y
-      
-      // Only animate if there's meaningful movement
-      if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
-        x += dx * 0.35
-        y += dy * 0.35
-        cursor.style.setProperty('--cursor-x', `${x}px`)
-        cursor.style.setProperty('--cursor-y', `${y}px`)
-        isMoving = true
-      } else if (isMoving) {
-        isMoving = false
-      }
-      
-      frame = requestAnimationFrame(render)
-    }
-
     const handleMove = (event: PointerEvent) => {
-      targetX = event.clientX
-      targetY = event.clientY
-      
+      // Write the coordinates on the event itself. The old lerp loop made
+      // the cursor visibly trail behind fast pointer movement.
+      cursor.style.setProperty('--cursor-x', `${event.clientX}px`)
+      cursor.style.setProperty('--cursor-y', `${event.clientY}px`)
       if (!isVisible) setIsVisible(true)
       
       const element = event.target instanceof Element ? event.target : null
@@ -77,14 +53,12 @@ export function MouseFollower() {
     window.addEventListener('pointermove', handleMove, { passive: true })
     window.addEventListener('pointerdown', handleDown, { passive: true })
     window.addEventListener('pointerleave', handleLeave, { passive: true })
-    frame = requestAnimationFrame(render)
 
     return () => {
       delete document.body.dataset.customCursor
       window.removeEventListener('pointermove', handleMove)
       window.removeEventListener('pointerdown', handleDown)
       window.removeEventListener('pointerleave', handleLeave)
-      cancelAnimationFrame(frame)
     }
   }, [prefersReducedMotion])
 
