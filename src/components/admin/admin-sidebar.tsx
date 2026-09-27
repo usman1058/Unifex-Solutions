@@ -30,7 +30,7 @@ export default function AdminSidebar() {
   return <>
     <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label={mobileMenuOpen ? 'Close admin navigation' : 'Open admin navigation'} aria-expanded={mobileMenuOpen} className="fixed bottom-4 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg lg:hidden">{mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}</button>
 
-    <aside className={`fixed inset-y-0 left-0 z-40 w-[min(19rem,calc(100vw-2rem))] transform border-r border-outline-variant/20 bg-card transition-all duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} ${collapsed ? 'lg:w-[5.5rem]' : 'lg:w-[19rem]'}`}>
+    <aside className={`fixed inset-y-0 left-0 z-40 w-[min(19rem,calc(100vw-2rem))] transform bg-card shadow-[10px_0_30px_rgba(0,0,0,0.16)] transition-all duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} ${collapsed ? 'lg:w-[5.5rem]' : 'lg:w-[19rem]'}`}>
       <div className="flex h-full flex-col">
         <div className={`border-b border-outline-variant/20 p-4 ${collapsed ? 'lg:px-3' : 'sm:p-6'}`}>
           <div className={`flex items-center ${collapsed ? 'lg:justify-center' : 'justify-between gap-3'}`}>

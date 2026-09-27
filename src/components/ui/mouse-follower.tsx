@@ -20,6 +20,10 @@ export function MouseFollower() {
     const cursor = cursorRef.current
     if (!cursor || reducedMotion) return
     document.body.dataset.customCursor = 'true'
+    // Render immediately at the viewport center. This prevents an invisible
+    // first frame while the browser is waiting for the first pointer event.
+    cursor.style.transform = 'translate3d(50vw, 50vh, 0)'
+    cursor.dataset.active = 'true'
 
     const move = (event: PointerEvent) => {
       cursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`
@@ -34,16 +38,13 @@ export function MouseFollower() {
       cursor.dataset.click = 'true'
       window.setTimeout(() => { cursor.dataset.click = 'false' }, 180)
     }
-    const leave = () => { cursor.dataset.active = 'false'; setVisible(false) }
 
     window.addEventListener('pointermove', move, { passive: true })
     window.addEventListener('pointerdown', down, { passive: true })
-    document.documentElement.addEventListener('pointerleave', leave, { passive: true })
     return () => {
       delete document.body.dataset.customCursor
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerdown', down)
-      document.documentElement.removeEventListener('pointerleave', leave)
     }
   }, [reducedMotion])
 
