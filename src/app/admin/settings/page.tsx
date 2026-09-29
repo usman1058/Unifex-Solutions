@@ -41,6 +41,8 @@ const DEFAULT_FIELDS = {
   image_api_key: { type: 'secret', category: 'ai', description: 'Image provider API key' },
   image_model: { type: 'text', category: 'ai', description: 'Image model, e.g. gemini-3.1-flash-image or black-forest-labs/FLUX.1-schnell' },
   image_base_url: { type: 'text', category: 'ai', description: 'Optional custom image endpoint' },
+  autoclip_url: { type: 'text', category: 'media', description: 'AutoClip web service URL' },
+  autoclip_language: { type: 'text', category: 'media', description: 'AutoClip interface language' },
   bank_account_name: { type: 'text', category: 'bank', description: 'Bank account holder / beneficiary name' },
   bank_account_number: { type: 'text', category: 'bank', description: 'Bank account number' },
   bank_sort_code: { type: 'text', category: 'bank', description: 'Bank sort code / routing number' },
@@ -83,6 +85,7 @@ export default function AdminSettingsPage() {
       }
       if (map.ai_tone === '') map.ai_tone = 'professional'
       if (map.ai_brand === '') map.ai_brand = 'Unifex Solutions'
+      if (map.autoclip_language === '') map.autoclip_language = 'en'
       if (map.bank_account_name === '') map.bank_account_name = 'Unifex Solutions Ltd'
       setValues(map)
       setStoredSecrets(secrets)
@@ -355,6 +358,15 @@ export default function AdminSettingsPage() {
         {/* Integrations */}
         <SocialAccountSettings />
         <IntegrationsManager />
+
+        <div className="bg-card border rounded-lg p-6">
+          <h2 className="text-xl font-bold mb-1">AutoClip engine</h2>
+          <p className="text-sm text-muted-foreground mb-5">Connect the English AutoClip web service for AI highlight detection, subtitle analysis, editing, and export. The service runs separately from this dashboard.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="space-y-2 text-sm"><span className="font-medium">AutoClip web URL</span><input type="url" value={values.autoclip_url || ''} onChange={(e) => setValues((prev) => ({ ...prev, autoclip_url: e.target.value }))} placeholder="http://localhost:3001" className="w-full bg-background border rounded-lg px-3 py-2.5" /><span className="block text-xs text-muted-foreground">Use the URL of your AutoClip Docker/Web frontend.</span></label>
+            <label className="space-y-2 text-sm"><span className="font-medium">Interface language</span><select value={values.autoclip_language || 'en'} onChange={(e) => setValues((prev) => ({ ...prev, autoclip_language: e.target.value }))} className="w-full bg-background border rounded-lg px-3 py-2.5"><option value="en">English</option></select><span className="block text-xs text-muted-foreground">English is enforced for the dashboard integration.</span></label>
+          </div>
+        </div>
 
         {/* Test connection */}
         <div className="bg-card border rounded-lg p-6">

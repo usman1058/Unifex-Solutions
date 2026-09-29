@@ -1,4 +1,5 @@
 import VideoClipper from '@/components/admin/video-clipper'
+import AutoClipPanel from '@/components/admin/autoclip-panel'
 
 export default function AdminVideoPage() {
   return (
@@ -8,7 +9,10 @@ export default function AdminVideoPage() {
         <h1 className="text-3xl font-bold sm:text-4xl">Video clipping</h1>
         <p className="mt-2 text-muted-foreground">Make short clips without sending source footage to the server.</p>
       </div>
-      <VideoClipper />
+      <div className="space-y-6">
+        <AutoClipPanel />
+        <VideoClipper />
+      </div>
     </div>
   )
 }
