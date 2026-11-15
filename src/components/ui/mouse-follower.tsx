@@ -30,9 +30,10 @@ export function MouseFollower() {
       cursor.dataset.active = 'true'
       setVisible(true)
       const target = event.target instanceof Element ? event.target.closest('a, button, [role="button"], input, textarea, select') : null
+      const textTarget = event.target instanceof Element ? event.target.closest('[data-cursor-text]') : null
       const heading = event.target instanceof Element ? event.target.closest('h1, h2, h3, h4') : null
       cursor.dataset.hover = target ? 'true' : 'false'
-      cursor.dataset.mode = heading ? 'heading' : target ? 'interactive' : 'default'
+      cursor.dataset.mode = target ? 'interactive' : textTarget ? 'text' : heading ? 'heading' : 'default'
     }
     const down = () => {
       cursor.dataset.click = 'true'

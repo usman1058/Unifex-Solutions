@@ -1,0 +1,26 @@
+const serviceCopy = {
+  'web-development': {
+    description: 'Accessible, responsive websites and web applications designed around your users, business goals, and future growth.',
+    content: `<p>We plan and build websites and web applications that are clear to use, work across screen sizes, and remain maintainable as requirements change. Work can include product discovery, interface design, front-end and back-end implementation, content management, and launch support.</p><h2>What the engagement can include</h2><ul><li>Responsive layouts and accessible interaction patterns</li><li>Content-managed marketing sites or custom web applications</li><li>Search-friendly page structure and metadata</li><li>Performance review, analytics setup, and launch checks</li></ul><h2>How we work</h2><p>We begin by clarifying users, content, and essential journeys. The team then agrees on scope and technical direction, builds in reviewable increments, and checks important flows on mobile and desktop before launch. Hosting, integrations, and ongoing support can be scoped to your needs.</p>`,
+  },
+  'full-stack-development': {
+    description: 'End-to-end product engineering that connects a reliable interface, backend services, data, and integrations.',
+    content: `<p>Full-stack development brings the parts of a digital product together: the interface customers use, the APIs that power it, and the data model that supports it. We can work from an early product brief or extend an existing application.</p><h2>What the engagement can include</h2><ul><li>Application architecture and technical planning</li><li>Front-end and back-end feature development</li><li>API design, database modeling, and third-party integrations</li><li>Deployment workflows, monitoring, and maintenance planning</li></ul><h2>How we work</h2><p>We map core user journeys and system boundaries first. Implementation is delivered in small, reviewable steps, with testing focused on critical behaviors and data access. The final handover can include technical documentation and a practical plan for operating and extending the system.</p>`,
+  },
+  'crm-development-integration': {
+    description: 'CRM tools and integrations that help teams organize customer data, reduce repetitive work, and see the next action clearly.',
+    content: `<p>Customer information often lives across forms, sales tools, support platforms, and spreadsheets. We help teams connect these systems or build focused CRM workflows around the way they actually work.</p><h2>What the engagement can include</h2><ul><li>Workflow and data-flow review</li><li>CRM configuration or custom internal tools</li><li>API integrations and field mapping</li><li>Validation, access controls, and operational reporting</li></ul><h2>How we work</h2><p>We identify the records that need to move, who can access them, and where errors are most costly. Integrations are designed with clear ownership, retry behavior, and visibility into failures. Before release, we test representative workflows with the people who will use them.</p>`,
+  },
+  'cybersecurity-penetration-testing': {
+    description: 'Security reviews and authorized testing that help teams find weaknesses, prioritize fixes, and strengthen software before release.',
+    content: `<p>Security work should match the system and its risks. We can review application behavior, identity and access controls, configuration, and data handling, then provide a prioritized set of findings for the responsible team.</p><h2>What the engagement can include</h2><ul><li>Application and configuration review</li><li>Threat modeling and vulnerability assessment</li><li>Penetration testing with written authorization and agreed scope</li><li>Remediation guidance and follow-up validation</li></ul><h2>How we work</h2><p>Before testing, we confirm ownership, scope, timing, and excluded systems. Findings are documented with impact and practical remediation steps. Testing is performed only against authorized targets; it does not itself certify compliance or guarantee that a system is free of vulnerabilities.</p>`,
+  },
+  'digital-marketing': {
+    description: 'Search, content, and conversion improvements grounded in your audience, measurable goals, and a clear reporting baseline.',
+    content: `<p>Digital marketing works best when the website experience, content, and measurement agree. We help teams improve discoverability and conversion by starting with the audience and the actions the business needs to support.</p><h2>What the engagement can include</h2><ul><li>Technical SEO and content structure review</li><li>Landing-page and conversion journey improvements</li><li>Analytics planning and measurement checks</li><li>Campaign support tied to agreed goals</li></ul><h2>How we work</h2><p>We establish a baseline, identify the highest-value gaps, and agree on what success will mean before making changes. Recommendations are prioritized by effort and likely impact, then reviewed against measured results. Search rankings and campaign outcomes depend on many external factors, so reporting focuses on transparent evidence rather than guarantees.</p>`,
+  },
+} as const
+
+export function getServiceCopy(slug: string) {
+  return serviceCopy[slug as keyof typeof serviceCopy]
+}

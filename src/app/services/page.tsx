@@ -5,6 +5,7 @@ import { FadeIn, StaggerContainer } from '@/components/ui/motion-wrapper'
 import ServiceVisual from '@/components/services/service-visual'
 import ServicesHeroArtifact from '@/components/services/services-hero-artifact'
 import { buildMetadata } from '@/lib/seo'
+import { getServiceCopy } from '@/lib/service-copy'
 
 export const metadata = buildMetadata({ title: 'Software Development & Cybersecurity Services | Unifex', description: 'Explore Unifex services across software engineering, cybersecurity, digital products, websites, and growth systems.', path: '/services' })
 
@@ -30,8 +31,13 @@ export default async function ServicesPage() {
     orderBy: [{ featured: 'desc' }, { displayOrder: 'asc' }],
   })
 
-  const featured = services.find((service) => service.featured) || services[0]
-  const standard = services.filter((service) => service.id !== featured?.id)
+  const enrichedServices = services.map((service) => {
+    const copy = getServiceCopy(service.slug)
+    return copy ? { ...service, description: copy.description } : service
+  })
+
+  const featured = enrichedServices.find((service) => service.featured) || enrichedServices[0]
+  const standard = enrichedServices.filter((service) => service.id !== featured?.id)
 
   return (
     <main className="min-h-screen overflow-hidden bg-background text-on-surface pt-24">
@@ -64,7 +70,7 @@ export default async function ServicesPage() {
           </Link>
         </div>
 
-        {services.length === 0 ? (
+        {enrichedServices.length === 0 ? (
           <div className="border border-outline-variant/20 p-16 text-center text-sm text-on-surface/50">New capabilities are being prepared.</div>
         ) : (
           <>

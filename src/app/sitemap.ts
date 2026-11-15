@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { siteUrl } from '@/lib/seo'
 import { isPlaceholderProjectUrl } from '@/lib/portfolio-content'
 import { isPlaceholderBlogContent } from '@/lib/published-content'
+import { editorialPosts } from '@/lib/editorial-posts'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, services, caseStudies] = await Promise.all([
@@ -25,9 +26,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/cookies`, priority: 0.3 },
   ]
 
+  const completePosts = posts.filter((post) => !isPlaceholderBlogContent(post.content))
+  const articleRoutes: MetadataRoute.Sitemap = completePosts.length > 0
+    ? completePosts.map((post) => ({ url: `${siteUrl}/blog/${post.slug}`, lastModified: post.updatedAt, changeFrequency: 'monthly' as const, priority: 0.7 }))
+    : editorialPosts.map((post) => ({ url: `${siteUrl}/blog/${post.slug}`, lastModified: new Date(post.publishedAt), changeFrequency: 'monthly' as const, priority: 0.7 }))
+
   return [
     ...coreRoutes.map(({ url, priority }) => ({ url, lastModified: new Date(), changeFrequency: 'weekly' as const, priority })),
-    ...posts.filter((post) => !isPlaceholderBlogContent(post.content)).map((post) => ({ url: `${siteUrl}/blog/${post.slug}`, lastModified: post.updatedAt, changeFrequency: 'monthly' as const, priority: 0.7 })),
+    ...articleRoutes,
     ...services.map((service) => ({ url: `${siteUrl}/services/${service.slug}`, lastModified: service.updatedAt, changeFrequency: 'monthly' as const, priority: 0.8 })),
     ...caseStudies.filter((study) => !isPlaceholderProjectUrl(study.projectUrl)).map((study) => ({ url: `${siteUrl}/portfolio/${study.slug}`, lastModified: study.updatedAt, changeFrequency: 'monthly' as const, priority: 0.7 })),
   ]

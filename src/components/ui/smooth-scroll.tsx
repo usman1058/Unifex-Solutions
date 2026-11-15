@@ -5,15 +5,17 @@ import Lenis from 'lenis'
 
 export default function SmoothScroll() {
   useEffect(() => {
-    // Skip on reduced motion preference
+    // Keep native touch scrolling on phones and tablets. Lenis is used for
+    // mouse-wheel input only, where its interpolation helps without slowing
+    // down swipe gestures or assistive scrolling.
+    const coarsePointer = window.matchMedia('(pointer: coarse)').matches
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (prefersReducedMotion) return
+    if (prefersReducedMotion || coarsePointer || window.innerWidth < 768) return
 
     const lenis = new Lenis({
-      duration: 0.7,
+      duration: 0.62,
       easing: (t) => 1 - Math.pow(1 - t, 3),
-      wheelMultiplier: 1.15,
-      touchMultiplier: 1,
+      wheelMultiplier: 1.25,
       infinite: false,
     })
 

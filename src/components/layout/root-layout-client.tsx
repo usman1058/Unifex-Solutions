@@ -13,8 +13,9 @@ export default function RootLayoutClient({ children }: { children: React.ReactNo
 
   return (
     <>
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       {!isAdminRoute && <Navbar />}
-      <div className="flex-1">
+      <div id="main-content" className="flex-1" tabIndex={-1}>
         {children}
       </div>
       {!isAdminRoute && <Footer />}

@@ -49,10 +49,11 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const scroller = scrollContainerRef && scrollContainerRef.current ? scrollContainerRef.current : window;
 
-    gsap.fromTo(
+    const animations = [gsap.fromTo(
       el,
       { transformOrigin: '0% 50%', rotate: baseRotation },
       {
@@ -66,11 +67,11 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
           scrub: true
         }
       }
-    );
+    )];
 
     const wordElements = el.querySelectorAll<HTMLElement>('.word');
 
-    gsap.fromTo(
+    animations.push(gsap.fromTo(
       wordElements,
       { opacity: baseOpacity, willChange: 'opacity' },
       {
@@ -85,10 +86,10 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
           scrub: true
         }
       }
-    );
+    ));
 
     if (enableBlur) {
-      gsap.fromTo(
+      animations.push(gsap.fromTo(
         wordElements,
         { filter: `blur(${blurStrength}px)` },
         {
@@ -103,18 +104,21 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
             scrub: true
           }
         }
-      );
+      ));
     }
 
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      animations.forEach((animation) => {
+        animation.scrollTrigger?.kill();
+        animation.kill();
+      });
     };
   }, [scrollContainerRef, enableBlur, baseRotation, baseOpacity, rotationEnd, wordAnimationEnd, blurStrength]);
 
   return (
-    <h2 ref={containerRef} className={`scroll-reveal ${containerClassName}`}>
+    <div ref={containerRef} className={`scroll-reveal ${containerClassName}`}>
       <p className={`scroll-reveal-text ${textClassName}`}>{splitText}</p>
-    </h2>
+    </div>
   );
 };
 

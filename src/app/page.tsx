@@ -19,6 +19,7 @@ import CircularText from '@/components/ui/circular-text'
 import { buildMetadata } from '@/lib/seo'
 import { isPlaceholderProjectUrl } from '@/lib/portfolio-content'
 import { isDemoMetric, isDemoTestimonial } from '@/lib/published-content'
+import { getServiceCopy } from '@/lib/service-copy'
 import {
   SiGithub, SiReact, SiNextdotjs, SiTypescript, SiTailwindcss,
   SiDocker, SiNodedotjs, SiPostgresql, SiPrisma, SiFigma,
@@ -103,7 +104,7 @@ export default async function Home() {
     id: s.id,
     slug: s.slug,
     title: s.title,
-    description: s.description,
+    description: getServiceCopy(s.slug)?.description || s.description,
     features: s.features ? (JSON.parse(s.features) as string[]) : []
   })) : defaultServices
 
