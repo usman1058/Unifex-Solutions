@@ -19,6 +19,9 @@ export default function SmoothScroll() {
       infinite: false,
     })
 
+    const resetOnRouteChange = () => lenis.scrollTo(0, { immediate: true })
+    window.addEventListener('unifex:route-change', resetOnRouteChange)
+
     let frame = 0
     function raf(time: number) {
       lenis.raf(time)
@@ -29,6 +32,7 @@ export default function SmoothScroll() {
 
     return () => {
       cancelAnimationFrame(frame)
+      window.removeEventListener('unifex:route-change', resetOnRouteChange)
       lenis.destroy()
     }
   }, [])
