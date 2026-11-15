@@ -5,7 +5,7 @@ const sections = [
     title: 'Who we are',
     paragraphs: [
       'This Privacy Policy explains how Unifex Solutions collects, uses, stores, and shares information when you visit this website, contact us, subscribe to updates, submit a project request, or use our public order-status tools.',
-      'Unifex Solutions is an independent digital studio operating under the Unifex Solutions brand and is the data controller for information handled through this website. For privacy questions or requests, email info@unifexsolutions.com.',
+      'Unifex Solutions is a registered company and the data controller for information handled through this website. For privacy questions or requests, email info@unifexsolutions.com.',
     ],
   },
   {
@@ -13,9 +13,9 @@ const sections = [
     bullets: [
       'Contact and project information such as your name, email address, company, phone number, subject, message, budget, and project details.',
       'Order and payment-submission information such as an order reference, payment method, amount, receipt file, and status updates. Payment credentials are not collected by this website.',
-      'Newsletter information such as your email address and subscription status.',
+      'Newsletter information such as your email address and subscription status. Contact info@unifexsolutions.com to request removal from the list.',
       'Technical information such as IP address, browser type, device information, approximate location, pages viewed, referring pages, and security or diagnostic logs.',
-      'Information you voluntarily provide in blog, contact, or service interactions.',
+      'Other information you choose to provide through forms on the website.',
     ],
   },
   {
@@ -31,10 +31,13 @@ const sections = [
   {
     title: 'Cookies, advertising, and Google services',
     paragraphs: [
-      'This website may use cookies, local storage, pixels, web beacons, IP addresses, and similar identifiers for essential functionality, preferences, analytics, security, and advertising. The specific technologies enabled may change as the site evolves.',
+      'The website currently uses local storage to remember your optional privacy choice and may use cookies needed for essential functions. No analytics or advertising tags are currently loaded. If those services are added, this policy and the consent controls will be updated before they are enabled.',
       'If Google AdSense or another advertising product is enabled, Google and its advertising partners may place and read cookies on your browser, use web beacons or IP addresses, and process information about your visits to this website or other websites to measure or personalize advertising. Third-party vendors, including Google, may serve ads based on a user\'s prior visits to this website or other websites.',
       'You can manage personalized advertising through Google Ads Settings at https://www.google.com/settings/ads and learn about broader third-party advertising choices at https://www.aboutads.info/choices/.',
-      'Users in the European Economic Area, the United Kingdom, or Switzerland may be shown a consent message before personalized advertising or non-essential storage is enabled. When advertising is served to those users, Unifex will use Google\'s Privacy & messaging CMP or another Google-certified CMP integrated with the IAB Transparency and Consent Framework as required by Google policy.',
+      'The current site banner is a basic preference control, not a Google-certified consent management platform. Before serving personalized Google ads to users in the European Economic Area, the United Kingdom, or Switzerland, configure a Google-certified CMP integrated with the IAB Transparency and Consent Framework and obtain the required consent. Applicable privacy laws may require additional controls for other advertising modes.',
+    ],
+    links: [
+      { label: 'How Google uses data when you use partner sites or apps', href: 'https://policies.google.com/technologies/partner-sites' },
     ],
   },
   {
@@ -68,5 +71,5 @@ const sections = [
 ]
 
 export default function PrivacyPolicyPage() {
-  return <LegalPage eyebrow="Privacy and data use" title="Privacy policy" intro="A clear explanation of the information Unifex Solutions handles, why we handle it, which partners may process it, and how you can make privacy choices." updated="August 9, 2026" sections={sections} />
+  return <LegalPage eyebrow="Privacy and data use" title="Privacy policy" intro="A clear explanation of the information Unifex Solutions handles, why we handle it, which partners may process it, and how you can make privacy choices." updated="November 15, 2026" sections={sections} />
 }

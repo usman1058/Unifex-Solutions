@@ -1,12 +1,14 @@
 import { MetadataRoute } from 'next'
 import { db } from '@/lib/db'
 import { siteUrl } from '@/lib/seo'
+import { isPlaceholderProjectUrl } from '@/lib/portfolio-content'
+import { isPlaceholderBlogContent } from '@/lib/published-content'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, services, caseStudies] = await Promise.all([
-    db.blogPost.findMany({ where: { published: true }, select: { slug: true, updatedAt: true } }),
+    db.blogPost.findMany({ where: { published: true }, select: { slug: true, updatedAt: true, content: true } }),
     db.service.findMany({ where: { published: true }, select: { slug: true, updatedAt: true } }),
-    db.caseStudy.findMany({ where: { published: true }, select: { slug: true, updatedAt: true } }),
+    db.caseStudy.findMany({ where: { published: true }, select: { slug: true, updatedAt: true, projectUrl: true } }),
   ])
 
   const coreRoutes: MetadataRoute.Sitemap = [
@@ -25,8 +27,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...coreRoutes.map(({ url, priority }) => ({ url, lastModified: new Date(), changeFrequency: 'weekly' as const, priority })),
-    ...posts.map((post) => ({ url: `${siteUrl}/blog/${post.slug}`, lastModified: post.updatedAt, changeFrequency: 'monthly' as const, priority: 0.7 })),
+    ...posts.filter((post) => !isPlaceholderBlogContent(post.content)).map((post) => ({ url: `${siteUrl}/blog/${post.slug}`, lastModified: post.updatedAt, changeFrequency: 'monthly' as const, priority: 0.7 })),
     ...services.map((service) => ({ url: `${siteUrl}/services/${service.slug}`, lastModified: service.updatedAt, changeFrequency: 'monthly' as const, priority: 0.8 })),
-    ...caseStudies.map((study) => ({ url: `${siteUrl}/portfolio/${study.slug}`, lastModified: study.updatedAt, changeFrequency: 'monthly' as const, priority: 0.7 })),
+    ...caseStudies.filter((study) => !isPlaceholderProjectUrl(study.projectUrl)).map((study) => ({ url: `${siteUrl}/portfolio/${study.slug}`, lastModified: study.updatedAt, changeFrequency: 'monthly' as const, priority: 0.7 })),
   ]
 }

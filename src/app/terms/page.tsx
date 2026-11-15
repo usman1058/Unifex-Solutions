@@ -5,7 +5,7 @@ const sections = [
     title: 'Agreement and eligibility',
     paragraphs: [
       'By accessing this website or engaging Unifex Solutions, you agree to these Terms of Service and our Privacy Policy. If you do not agree, do not use the website or submit an order.',
-      'Unifex Solutions is an independent digital studio operating under the Unifex Solutions brand. These terms do not represent the brand as a registered company or organization.',
+      'Unifex Solutions is a registered company and operates this website under the Unifex Solutions name.',
       'You must be legally able to enter into an agreement in your jurisdiction. If you act for a company, you confirm that you have authority to bind that company.',
     ],
   },
@@ -63,12 +63,12 @@ const sections = [
   {
     title: 'Governing law and contact',
     paragraphs: [
-      'These terms are governed by the laws applicable to the jurisdiction in which Unifex Solutions is registered, without regard to conflict-of-law rules. Any mandatory consumer or data-protection rights remain unaffected.',
+      'The governing law and dispute forum for a paid engagement will be stated in its written agreement. Any matter not covered by such an agreement remains subject to applicable law and any rights that cannot legally be waived.',
       'For questions about these terms, email info@unifexsolutions.com or use the contact page.',
     ],
   },
 ]
 
 export default function TermsPage() {
-  return <LegalPage eyebrow="Legal terms" title="Terms of service" intro="The rules for using this website, requesting services, submitting materials, reviewing indicative pricing, and entering a project engagement with Unifex Solutions." updated="August 9, 2026" sections={sections} />
+  return <LegalPage eyebrow="Legal terms" title="Terms of service" intro="The rules for using this website, requesting services, submitting materials, reviewing indicative pricing, and entering a project engagement with Unifex Solutions." updated="November 15, 2026" sections={sections} />
 }

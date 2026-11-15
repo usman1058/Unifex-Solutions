@@ -26,6 +26,11 @@ function isMissingTableError(error: unknown): boolean {
   return error instanceof Prisma.PrismaClientKnownRequestError && ['P2021', 'P2022', 'P2024'].includes(error.code)
 }
 
+function isConnectionError(error: unknown): boolean {
+  return error instanceof Prisma.PrismaClientInitializationError ||
+    (error instanceof Prisma.PrismaClientKnownRequestError && ['P1001', 'P1002', 'P1008', 'P1017'].includes(error.code))
+}
+
 const safeDb = new Proxy(prisma, {
   get(target, property, receiver) {
     const model = Reflect.get(target, property, receiver)
@@ -40,7 +45,7 @@ const safeDb = new Proxy(prisma, {
           try {
             return await operation.apply(modelTarget, args)
           } catch (error) {
-            if (!isMissingTableError(error)) throw error
+            if (!isMissingTableError(error) && !isConnectionError(error)) throw error
             if (!schemaWarningShown) {
               schemaWarningShown = true
               console.warn('[db] A read query could not obtain a healthy Neon connection; serving empty read results for this render.')

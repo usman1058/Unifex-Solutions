@@ -2,12 +2,13 @@ import { db } from '@/lib/db'
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import { buildMetadata } from '@/lib/seo'
+import { isDemoTeamMember } from '@/lib/published-content'
 
-export const metadata = buildMetadata({ title: 'About Unifex Solutions | The Studio Behind Digital Systems', description: 'Meet the people, principles, and engineering approach behind Unifex Solutions.', path: '/about' })
+export const metadata = buildMetadata({ title: 'About Unifex Solutions | Our Engineering Approach', description: 'Learn about Unifex Solutions, our principles, and our approach to building secure, high-performance digital systems.', path: '/about' })
 export const revalidate = 60
 
 export default async function AboutPage() {
-  const teamMembers = await db.teamMember.findMany({ where: { published: true }, orderBy: { displayOrder: 'asc' } })
+  const teamMembers = (await db.teamMember.findMany({ where: { published: true }, orderBy: { displayOrder: 'asc' } })).filter((member) => !isDemoTeamMember(member.name))
   return <main className="min-h-screen overflow-hidden bg-background pt-24 text-on-surface">
     <section className="container mx-auto px-6 py-32 md:px-12 md:py-48"><p className="mb-10 text-[10px] font-black uppercase tracking-[0.6em] text-primary">Origin // The Ethos</p><h1 className="max-w-6xl font-headline text-5xl font-black uppercase leading-[0.86] tracking-[-0.08em] md:text-9xl">We build <span className="text-on-surface/25">systems</span><br />that move.</h1><p className="mt-16 max-w-3xl border-l-4 border-primary/30 pl-8 text-lg font-medium uppercase leading-relaxed text-on-surface/70">Unifex Solutions engineers resilient digital products, secure platforms, and high-performance experiences for ambitious teams.</p></section>
     <section className="border-y border-outline-variant/15 bg-surface-container-low"><div className="container mx-auto grid gap-px px-6 py-24 md:grid-cols-3 md:px-12">{[['Structural integrity', 'Codebases engineered for scale, clarity, and long-term performance.'], ['Kinetic velocity', 'Focused iterations that turn complex ideas into useful releases quickly.'], ['Luxury refinement', 'Every interaction is considered, measured, and made to earn attention.']].map(([title, description]) => <article key={title} className="bg-surface p-10"><p className="mb-8 text-[10px] font-black uppercase tracking-[0.4em] text-primary">Principle</p><h2 className="mb-5 font-headline text-2xl font-black uppercase">{title}</h2><p className="text-sm leading-relaxed text-on-surface/60">{description}</p></article>)}</div></section>

@@ -34,8 +34,15 @@ const structuredData = {
       '@id': `${siteUrl}/#organization`,
       name: siteName,
       url: siteUrl,
-      logo: { '@type': 'ImageObject', url: `${siteUrl}/logo.webp`, width: 675, height: 663 },
+      logo: { '@type': 'ImageObject', url: `${siteUrl}/logo.webp`, width: 677, height: 667 },
       description: siteDescription,
+      email: 'info@unifexsolutions.com',
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        email: 'info@unifexsolutions.com',
+        availableLanguage: ['English'],
+      },
     },
     {
       '@type': 'WebSite',

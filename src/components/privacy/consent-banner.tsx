@@ -27,7 +27,7 @@ export default function ConsentBanner() {
       <div className="mt-5 flex flex-wrap gap-3">
         <button onClick={() => choose('accepted')} className="rounded-full bg-primary px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-black">Accept optional</button>
         <button onClick={() => choose('rejected')} className="rounded-full border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-white">Reject optional</button>
-        <Link href="/cookies" className="rounded-full border border-primary/30 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-primary">Manage choices</Link>
+        <button type="button" onClick={() => { window.localStorage.removeItem('unifex_consent'); setVisible(true) }} className="rounded-full border border-primary/30 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-primary">Manage choices</button>
       </div>
     </aside>
   )

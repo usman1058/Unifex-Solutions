@@ -40,28 +40,30 @@ export default function HeroContent() {
         </div>
       </motion.div>
 
-      <div className="mt-6" key={index}>
-        {headings[index].map((line, i) => (
-          <Shuffle
-            key={i}
-            text={line}
-            tag="span"
-            className="block font-headline font-black text-4xl sm:text-5xl md:text-6xl lg:text-[4.8rem] xl:text-[5.8rem] leading-[0.98] tracking-tight uppercase text-on-surface"
-            shuffleDirection="right"
-            duration={0.4}
-            animationMode="evenodd"
-            shuffleTimes={2}
-            ease="power3.out"
-            stagger={0.03}
-            threshold={0.1}
-            triggerOnce={true}
-            triggerOnHover={true}
-            respectReducedMotion={true}
-            colorFrom="#F97316"
-            colorTo="inherit"
-          />
-        ))}
-      </div>
+      <h1 className="mt-6">
+        <span key={index} className="block">
+          {headings[index].map((line, i) => (
+            <Shuffle
+              key={i}
+              text={line}
+              tag="span"
+              className="block font-headline font-black text-4xl sm:text-5xl md:text-6xl lg:text-[4.8rem] xl:text-[5.8rem] leading-[0.98] tracking-tight uppercase text-on-surface"
+              shuffleDirection="right"
+              duration={0.4}
+              animationMode="evenodd"
+              shuffleTimes={2}
+              ease="power3.out"
+              stagger={0.03}
+              threshold={0.1}
+              triggerOnce={true}
+              triggerOnHover={true}
+              respectReducedMotion={true}
+              colorFrom="#F97316"
+              colorTo="inherit"
+            />
+          ))}
+        </span>
+      </h1>
 
       <motion.div
         className="flex flex-wrap items-center justify-center gap-4 pt-6 pb-24"
@@ -79,7 +81,7 @@ export default function HeroContent() {
 
         <a
           href="#capabilities"
-          className="inline-flex items-center gap-2 text-xs font-label tracking-[0.2em] uppercase text-on-surface-variant hover:text-primary transition-colors py-2 group"
+          className="inline-flex items-center gap-2 border border-white/20 bg-black/40 px-4 py-3 text-xs font-label tracking-[0.2em] uppercase text-white/85 backdrop-blur-sm transition-colors hover:border-primary hover:bg-black/70 hover:text-primary group"
         >
           EXPLORE CAPABILITIES
           <div className="h-px w-8 bg-primary/40 group-hover:w-12 transition-all" />

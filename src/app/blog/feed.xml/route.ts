@@ -1,7 +1,8 @@
 import { db } from '@/lib/db'
+import { isPlaceholderBlogContent } from '@/lib/published-content'
+import { siteUrl } from '@/lib/seo'
 
 export async function GET() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
   const posts = await db.blogPost.findMany({
     where: { published: true },
     orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
@@ -9,7 +10,7 @@ export async function GET() {
     include: { category: true },
   })
 
-  const items = posts.map((post) => {
+  const items = posts.filter((post) => !isPlaceholderBlogContent(post.content)).map((post) => {
     const publishedAt = post.publishedAt || post.createdAt
     return `<item><title><![CDATA[${post.title}]]></title><link>${siteUrl}/blog/${post.slug}</link><guid isPermaLink="true">${siteUrl}/blog/${post.slug}</guid><description><![CDATA[${post.excerpt || post.title}]]></description><pubDate>${publishedAt.toUTCString()}</pubDate><category><![CDATA[${post.category?.name || 'General'}]]></category></item>`
   }).join('')

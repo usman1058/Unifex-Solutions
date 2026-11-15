@@ -108,10 +108,12 @@ export default function OrderStatusPage() {
 
               <form onSubmit={handleSubmit} className="space-y-10">
                 <div className="space-y-3">
-                  <label className="text-[9px] font-black tracking-[0.3em] text-on-surface/70 uppercase italic block">Order Reference *</label>
+                  <label htmlFor="order-reference" className="text-[9px] font-black tracking-[0.3em] text-on-surface/70 uppercase italic block">Order Reference *</label>
                   <input
+                    id="order-reference"
                     type="text"
                     required
+                    autoComplete="off"
                     value={orderNumber}
                     onChange={(e) => setOrderNumber(e.target.value.toUpperCase())}
                     placeholder="UF-2026-0001"
@@ -119,10 +121,12 @@ export default function OrderStatusPage() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <label className="text-[9px] font-black tracking-[0.3em] text-on-surface/70 uppercase italic block">Email Used *</label>
+                  <label htmlFor="order-email" className="text-[9px] font-black tracking-[0.3em] text-on-surface/70 uppercase italic block">Email Used *</label>
                   <input
+                    id="order-email"
                     type="email"
                     required
+                    autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@email.com"

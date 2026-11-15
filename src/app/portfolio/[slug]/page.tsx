@@ -4,13 +4,28 @@ import Link from 'next/link'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
 import { FadeIn } from '@/components/ui/motion-wrapper'
 import { buildMetadata } from '@/lib/seo'
+import { sanitizeCmsHtml } from '@/lib/sanitize-html'
+import { isPlaceholderProjectUrl } from '@/lib/portfolio-content'
+
+type StudyResult = string | { label?: string; value?: string }
+
+function parseJsonArray<T>(value: string | null | undefined): T[] {
+  if (!value) return []
+
+  try {
+    const parsed: unknown = JSON.parse(value)
+    return Array.isArray(parsed) ? parsed as T[] : []
+  } catch {
+    return []
+  }
+}
 
 export const revalidate = 60
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const study = await db.caseStudy.findUnique({ where: { slug } })
-  if (!study) return buildMetadata({ title: 'Case Study Not Found | Unifex', description: 'The requested Unifex case study could not be found.', path: `/portfolio/${slug}`, noIndex: true })
+  if (!study || !study.published || isPlaceholderProjectUrl(study.projectUrl)) return buildMetadata({ title: 'Case Study Not Found | Unifex', description: 'The requested Unifex case study could not be found.', path: `/portfolio/${slug}`, noIndex: true })
   return buildMetadata({ title: `${study.title} | Unifex Case Study`, description: study.overview, path: `/portfolio/${slug}`, image: study.thumbnailUrl })
 }
 
@@ -20,13 +35,13 @@ export default async function PortfolioDetailPage({ params }: { params: Promise<
     where: { slug }
   })
 
-  if (!study) {
+  if (!study || !study.published || isPlaceholderProjectUrl(study.projectUrl)) {
     notFound()
   }
 
-  const results: string[] = study.results ? JSON.parse(study.results) : []
-  const techStack: string[] = study.techStack ? JSON.parse(study.techStack) : []
-  const screenshots: string[] = study.screenshots ? JSON.parse(study.screenshots) : []
+  const results = parseJsonArray<StudyResult>(study.results)
+  const techStack = parseJsonArray<string>(study.techStack).filter((technology) => typeof technology === 'string')
+  const screenshots = parseJsonArray<string>(study.screenshots).filter((url) => typeof url === 'string')
 
   return (
     <main className="min-h-screen pt-24 bg-background text-on-surface overflow-x-hidden">
@@ -90,9 +105,16 @@ export default async function PortfolioDetailPage({ params }: { params: Promise<
                 <div>
                   <span className="text-[8px] font-black tracking-[0.4em] text-primary uppercase block mb-4 italic">Impact Metrics</span>
                   <div className="space-y-3">
-                    {results.map((res: string, i: number) => (
+                    {results.map((result, i) => (
                       <div key={i} className="p-4 bg-surface-container-low border-l-2 border-primary">
-                        <p className="text-xs font-black tracking-widest text-primary uppercase">{res}</p>
+                        {typeof result === 'string' ? (
+                          <p className="text-xs font-black tracking-widest text-primary uppercase">{result}</p>
+                        ) : (
+                          <>
+                            {result.label && <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface/55">{result.label}</p>}
+                            {result.value && <p className="mt-1 text-xl font-black tracking-tight text-primary">{result.value}</p>}
+                          </>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -110,7 +132,7 @@ export default async function PortfolioDetailPage({ params }: { params: Promise<
                 className="prose prose-invert prose-lg max-w-none 
                   prose-headings:font-headline prose-headings:font-black prose-headings:tracking-tighter prose-headings:uppercase
                   prose-p:text-on-surface/80 prose-p:font-light prose-p:leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: study.problem || study.solution || study.overview }} 
+                dangerouslySetInnerHTML={{ __html: sanitizeCmsHtml(study.problem || study.solution || study.overview) }}
               />
 
               {screenshots.length > 0 && (

@@ -157,19 +157,19 @@
   }
 
   .unifex-cursor-ring {
-    width: 2rem;
-    height: 2rem;
-    border: 1px solid rgba(255, 174, 91, 0.82);
-    box-shadow: 0 0 0 1px rgba(255, 244, 223, 0.15), 0 0 22px rgba(255, 143, 43, 0.48);
-    transition: transform 120ms ease, width 120ms ease, height 120ms ease, background 120ms ease;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 2px solid #fff4df;
+    box-shadow: 0 0 0 2px rgba(10, 10, 10, 0.9), 0 0 20px rgba(255, 143, 43, 0.9);
+    transition: transform 90ms ease, width 90ms ease, height 90ms ease, background 90ms ease;
   }
 
   .unifex-cursor-core {
-    width: 0.42rem;
-    height: 0.42rem;
+    width: 0.55rem;
+    height: 0.55rem;
     border-radius: 50%;
     background: #fff4df;
-    border: 1px solid rgba(255, 174, 91, 0.9);
+    border: 2px solid #0a0a0a;
     box-shadow: 0 0 12px rgba(255, 244, 223, 1), 0 0 24px rgba(255, 143, 43, 0.9);
   }
 
@@ -224,17 +224,6 @@
   .unifex-cursor[data-click='true'] .unifex-cursor-ring {
     transform: translate(-50%, -50%) scale(1.3);
     background: rgba(255, 244, 223, 0.2);
-  }
-
-  @media (pointer: fine) {
-    body[data-custom-cursor='true'],
-    body[data-custom-cursor='true'] a,
-    body[data-custom-cursor='true'] button,
-    body[data-custom-cursor='true'] input,
-    body[data-custom-cursor='true'] textarea,
-    body[data-custom-cursor='true'] select {
-      cursor: none;
-    }
   }
 
   .fluid-glass-dom-lens {

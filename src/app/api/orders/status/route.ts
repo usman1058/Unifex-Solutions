@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
       name: order.name,
       status: order.status,
       paymentStatus: order.paymentStatus,
+      adminMessage: order.adminMessage,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
     }))

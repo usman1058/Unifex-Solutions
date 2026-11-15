@@ -18,6 +18,8 @@ export default function MetricsSection({ stats }: { stats: Metric[] }) {
   const [active, setActive] = useState(0)
   const visibleStats = stats.slice(0, 4)
 
+  if (visibleStats.length === 0) return null
+
   return (
     <section className="relative overflow-hidden border-y border-outline-variant/15 bg-[#151515] py-20 sm:py-28">
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,184,123,0.08),transparent_28%,transparent_72%,rgba(255,184,123,0.04))]" />

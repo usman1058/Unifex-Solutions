@@ -89,13 +89,9 @@ export default function Footer() {
 
           <div className="flex flex-col gap-4 col-span-2 sm:col-span-1">
             <span className="text-xs uppercase tracking-[0.2em] font-headline text-primary font-bold">CONTACT</span>
-            <p className="text-on-surface-variant font-label text-xs tracking-wider uppercase leading-relaxed">
-              HELLO@UNIFEXSOLUTIONS.COM
-              <br />
-              +1 (555) 123-4567
-              <br />
-              NEW YORK // LONDON
-            </p>
+            <a href="mailto:info@unifexsolutions.com" className="break-all text-on-surface-variant font-label text-xs tracking-wider uppercase leading-relaxed hover:text-primary">
+              INFO@UNIFEXSOLUTIONS.COM
+            </a>
           </div>
         </div>
       </div>

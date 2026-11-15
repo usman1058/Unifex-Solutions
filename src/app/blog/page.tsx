@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import BlogExperience from '@/components/blog/blog-experience'
 import { buildMetadata } from '@/lib/seo'
+import { isPlaceholderBlogContent } from '@/lib/published-content'
 
 export const metadata = buildMetadata({ title: 'Technology & Digital Growth Blog | The Unifex Journal', description: 'Practical insights on software development, cybersecurity, digital products, SEO, and sustainable online growth.', path: '/blog' })
 
@@ -13,7 +14,7 @@ export default async function BlogPage() {
     include: { category: true, tagJoins: { include: { tag: true } } },
   })
 
-  return <BlogExperience posts={posts.map((post) => ({
+  return <BlogExperience posts={posts.filter((post) => !isPlaceholderBlogContent(post.content)).map((post) => ({
     id: post.id,
     slug: post.slug,
     title: post.title,

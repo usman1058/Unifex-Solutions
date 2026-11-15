@@ -16,7 +16,9 @@ import CardSwap, { Card } from '@/components/ui/card-swap'
 import TextReveal from '@/components/ui/text-reveal'
 import ScrollReveal from '@/components/ui/scroll-reveal'
 import CircularText from '@/components/ui/circular-text'
-import HomeIntroLoader from '@/components/home/home-intro-loader'
+import { buildMetadata } from '@/lib/seo'
+import { isPlaceholderProjectUrl } from '@/lib/portfolio-content'
+import { isDemoMetric, isDemoTestimonial } from '@/lib/published-content'
 import {
   SiGithub, SiReact, SiNextdotjs, SiTypescript, SiTailwindcss,
   SiDocker, SiNodedotjs, SiPostgresql, SiPrisma, SiFigma,
@@ -41,6 +43,7 @@ const techLogos = [
 ]
 
 export const revalidate = 60
+export const metadata = buildMetadata({ title: 'Unifex Solutions | Software & Cybersecurity', description: 'We build secure software, digital products, and high-performance web experiences for ambitious teams.' })
 
 // Fallback services in case DB returns fewer than 5
 const defaultServices = [
@@ -88,16 +91,15 @@ const defaultServices = [
 
 
 export default async function Home() {
-  const [statsDb, servicesDb, caseStudiesDb, testimonialsDb, clientsDb] = await Promise.all([
+  const [statsDb, servicesDb, caseStudiesDb, testimonialsDb] = await Promise.all([
     db.stat.findMany({ where: { published: true }, orderBy: { displayOrder: 'asc' } }),
     db.service.findMany({ where: { published: true }, orderBy: { displayOrder: 'asc' }, take: 5 }),
     db.caseStudy.findMany({ where: { published: true }, orderBy: { displayOrder: 'asc' }, take: 2 }),
     db.testimonial.findMany({ where: { published: true, featured: true }, orderBy: { displayOrder: 'asc' }, take: 1 }),
-    db.client.findMany({ where: { published: true }, orderBy: { displayOrder: 'asc' } }),
   ])
 
   // Process services to ensure 5 clean service items
-  const servicesList = servicesDb.length >= 5 ? servicesDb.map(s => ({
+  const servicesList = servicesDb.length > 0 ? servicesDb.map(s => ({
     id: s.id,
     slug: s.slug,
     title: s.title,
@@ -105,45 +107,13 @@ export default async function Home() {
     features: s.features ? (JSON.parse(s.features) as string[]) : []
   })) : defaultServices
 
-  // Process stats to guarantee 4 items
-  const statsList = statsDb.length >= 4 ? statsDb : [
-    { id: '1', value: '150+', label: 'PROJECTS COMPLETED' },
-    { id: '2', value: '100+', label: 'HAPPY CLIENTS' },
-    { id: '3', value: '25+', label: 'TEAM MEMBERS' },
-    { id: '4', value: '8+', label: 'YEARS EXPERIENCE' },
-  ]
-
-  const featuredTestimonial = testimonialsDb[0] || {
-    name: 'Sarah Johnson',
-    role: 'CEO',
-    company: 'TechStart Inc.',
-    content: 'Unifex Solutions engineered our full-stack platform and fortified our cloud infrastructure. Their team delivered flawless execution on time and within scope.',
-  }
-
-  const clientLogos = clientsDb.length > 0 ? clientsDb.map(c => c.name) : [
-    'TECHSTART INC.', 'GROWTHHUB', 'RETAILMAX', 'SECUREBANK', 'HEALTHPLUS', 'EDUTECH'
-  ]
-
-  const caseStudiesList = caseStudiesDb.length >= 2 ? caseStudiesDb : [
-    {
-      id: 'cs1',
-      slug: 'ecommerce-platform',
-      title: 'E-Commerce Platform for Retail Giant',
-      industry: 'E-Commerce',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800&auto=format&fit=crop'
-    },
-    {
-      id: 'cs2',
-      slug: 'mobile-banking-app',
-      title: 'Mobile Banking App & Security Core',
-      industry: 'FinTech & Security',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop'
-    }
-  ]
+  // Only publish client proof, outcomes, and case studies that exist in the CMS.
+  const statsList = statsDb.filter(stat => !isDemoMetric(stat.label, stat.value))
+  const featuredTestimonial = testimonialsDb.find(testimonial => !isDemoTestimonial(testimonial.name, testimonial.company)) || null
+  const caseStudiesList = caseStudiesDb.filter(study => !isPlaceholderProjectUrl(study.projectUrl))
 
   return (
     <main className="w-full min-h-screen bg-background text-on-surface overflow-x-clip">
-      <HomeIntroLoader />
       {/* SECTION 1: ENHANCED INTERACTIVE 3D HERO SECTION */}
       <section className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center pt-28 pb-44 overflow-hidden">
         <HeroBackground />
@@ -170,7 +140,7 @@ export default async function Home() {
       <section className="py-16 bg-surface-container-lowest overflow-hidden border-y border-outline-variant/15">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-6">
           <span className="text-[10px] font-label tracking-[0.3em] uppercase text-on-surface-variant/60 block text-center md:text-left">
-            TRUSTED BY FORWARD-THINKING ENTERPRISES WORLDWIDE
+            TOOLS IN OUR STACK
           </span>
         </div>
         <LogoLoop
@@ -242,7 +212,7 @@ export default async function Home() {
                   rotationEnd="center center"
                   wordAnimationEnd="center center"
                 >
-                  From startups to Fortune 500 enterprises, we deliver production-grade software combining cutting-edge technology with rigorous security and performance optimization.
+                  We deliver production-grade software combining careful engineering, security, and performance optimization.
                 </ScrollReveal>
 
                 <TextReveal delay={0.7}>

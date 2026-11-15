@@ -4,6 +4,7 @@ type Section = {
   title: string
   paragraphs?: string[]
   bullets?: string[]
+  links?: { label: string; href: string }[]
 }
 
 export default function LegalPage({
@@ -35,6 +36,13 @@ export default function LegalPage({
               <h2 className="text-sm font-bold uppercase tracking-[0.18em] text-primary">{String(index + 1).padStart(2, '0')} / {section.title}</h2>
               <div className="space-y-5 text-sm leading-8 text-on-surface/70 sm:text-base">
                 {section.paragraphs?.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                {section.links?.map((link) => (
+                  <p key={link.href}>
+                    <a className="text-primary underline underline-offset-4" href={link.href} target="_blank" rel="noopener noreferrer">
+                      {link.label}
+                    </a>
+                  </p>
+                ))}
                 {section.bullets && (
                   <ul className="list-disc space-y-2 pl-5 marker:text-primary">
                     {section.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}

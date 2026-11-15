@@ -10,20 +10,23 @@ export default function SmoothScroll() {
     if (prefersReducedMotion) return
 
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      touchMultiplier: 2,
+      duration: 0.7,
+      easing: (t) => 1 - Math.pow(1 - t, 3),
+      wheelMultiplier: 1.15,
+      touchMultiplier: 1,
       infinite: false,
     })
 
+    let frame = 0
     function raf(time: number) {
       lenis.raf(time)
-      requestAnimationFrame(raf)
+      frame = requestAnimationFrame(raf)
     }
 
-    requestAnimationFrame(raf)
+    frame = requestAnimationFrame(raf)
 
     return () => {
+      cancelAnimationFrame(frame)
       lenis.destroy()
     }
   }, [])
