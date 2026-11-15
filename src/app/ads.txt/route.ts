@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-const DEFAULT_PUBLISHER_ID = 'pub-4625445854886017'
+const DEFAULT_PUBLISHER_ID = 'pub-9704794346591870'
 
 export const dynamic = 'force-dynamic'
 
