@@ -38,7 +38,7 @@ export default function ServiceVisual({ title, imageUrl, index = 0, compact = fa
         animate={reduceMotion ? undefined : { scale: [1, 1.04, 1], x: ['0%', '1.5%', '0%'] }}
         transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
       />
-      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(0,0,0,0.15),rgba(0,0,0,0.82)),linear-gradient(0deg,rgba(213,255,0,0.15),transparent_48%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(0,0,0,0.15),rgba(0,0,0,0.82)),linear-gradient(0deg,rgba(255,184,123,0.15),transparent_48%)]" />
       <motion.div
         className="absolute -right-16 -top-16 h-52 w-52 rounded-full border border-primary/45"
         animate={reduceMotion ? undefined : { rotate: 360 }}
@@ -75,7 +75,7 @@ export default function ServiceVisual({ title, imageUrl, index = 0, compact = fa
         </motion.div>
       </div>
       <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover/visual:opacity-100">
-        <div className="absolute left-0 top-1/3 h-px w-full bg-primary/70 shadow-[0_0_16px_rgba(213,255,0,0.9)]" />
+        <div className="absolute left-0 top-1/3 h-px w-full bg-primary/70 shadow-[0_0_16px_rgba(255,184,123,0.9)]" />
         <div className="absolute left-1/3 top-0 h-full w-px bg-primary/35" />
       </div>
     </motion.div>

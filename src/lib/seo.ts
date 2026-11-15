@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const siteName = 'Unifex Solutions'
-export const siteDescription = 'Unifex Solutions engineers high-performance websites, software products, secure systems, and digital growth experiences for ambitious teams.'
+export const siteDescription = 'Unifex Solutions is a software development company building custom websites, web applications, and secure digital products for businesses.'
 export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://unifexsolutions.com').replace(/\/$/, '')
 export const siteLogo = `${siteUrl}/logo.webp`
 

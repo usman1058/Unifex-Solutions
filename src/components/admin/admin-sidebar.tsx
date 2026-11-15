@@ -35,7 +35,7 @@ export default function AdminSidebar() {
         <div className={`border-b border-outline-variant/20 p-4 ${collapsed ? 'lg:px-3' : 'sm:p-6'}`}>
           <div className={`flex items-center ${collapsed ? 'lg:justify-center' : 'justify-between gap-3'}`}>
             <Link href="/admin/dashboard" onClick={() => setMobileMenuOpen(false)} className={`flex items-center gap-3 ${collapsed ? 'lg:justify-center' : ''}`}>
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary font-bold text-primary-foreground shadow-[0_0_24px_rgba(213,255,0,0.18)]">U</div>
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary font-bold text-primary-foreground shadow-[0_0_24px_rgba(255,184,123,0.18)]">U</div>
               <div className={collapsed ? 'lg:hidden' : ''}><div className="font-bold tracking-tight">Unifex</div><div className="text-[11px] text-muted-foreground">Admin workspace</div></div>
             </Link>
             <button type="button" onClick={() => setCollapsed(!collapsed)} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="hidden rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:block">{collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}</button>

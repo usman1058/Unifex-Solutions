@@ -17,7 +17,7 @@ export default function AmbientCursorGlow() {
 
   useEffect(() => {
     const glow = glowRef.current
-    if (!glow || prefersReducedMotion) return
+    if (!glow || prefersReducedMotion || window.matchMedia('(pointer: coarse)').matches) return
 
     const handlePointerMove = (event: PointerEvent) => {
       glow.style.setProperty('--cursor-x', `${event.clientX}px`)

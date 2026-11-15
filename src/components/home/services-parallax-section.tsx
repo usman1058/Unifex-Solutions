@@ -191,7 +191,7 @@ export default function ServicesParallaxSection({ services }: ServicesParallaxSe
               </div>
 
               <div>
-                <motion.h3 initial={{ opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.45, delay: 0.08 }} className="max-w-lg font-headline text-4xl font-black uppercase leading-[0.9] tracking-[-0.06em] text-black sm:text-6xl">
+                <motion.h3 initial={{ opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.45, delay: 0.08 }} className="max-w-lg break-words font-headline text-3xl font-black uppercase leading-[0.95] tracking-[-0.06em] text-black sm:text-6xl">
                   {activeService.title}
                 </motion.h3>
                 <p className="mt-5 max-w-xl text-sm leading-relaxed text-black/75 sm:text-base">

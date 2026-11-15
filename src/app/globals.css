@@ -43,7 +43,7 @@
 }
 
 :root {
-  /* Obsidian Monolith Theme (WCAG AA & AAA Compliant) */
+  /* Warm, high-contrast dark theme */
   --background: #0a0a0a;
   --foreground: #e5e2e1;
 
@@ -95,6 +95,12 @@
       radial-gradient(circle at 86% 8%, rgba(255, 132, 42, 0.075), transparent 28rem),
       radial-gradient(circle at 8% 92%, rgba(255, 164, 76, 0.035), transparent 24rem);
     background-attachment: fixed;
+  }
+
+  @media (max-width: 767px) {
+    .bg-background {
+      background-attachment: scroll;
+    }
   }
 
   .ambient-cursor-glow {
@@ -266,7 +272,7 @@
     transform: rotate(-24deg);
   }
 
-  @media (max-width: 700px), (prefers-reduced-motion: reduce) {
+  @media (max-width: 700px), (pointer: coarse), (prefers-reduced-motion: reduce) {
     .ambient-cursor-glow,
     .fluid-glass-dom-lens,
     .unifex-cursor {
@@ -282,6 +288,26 @@
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-headline font-bold tracking-tight;
+  }
+
+  :where(a, button, input, textarea, select, [tabindex]):focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html,
+    body {
+      scroll-behavior: auto !important;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
@@ -315,11 +341,6 @@
   [class*="text-[9px]"][class*="text-white/"],
   [class*="text-[10px]"][class*="text-white/"] {
     color: rgba(229, 226, 225, 0.78) !important;
-  }
-
-  :focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 3px;
   }
 
   .skip-link {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import Shuffle from '@/components/ui/shuffle'
@@ -15,13 +15,15 @@ const headings = [
 
 export default function HeroContent() {
   const [index, setIndex] = useState(0)
+  const reduceMotion = useReducedMotion()
 
   useEffect(() => {
+    if (reduceMotion) return
     const interval = setInterval(() => {
       setIndex(prev => (prev + 1) % headings.length)
     }, 4500)
     return () => clearInterval(interval)
-  }, [])
+  }, [reduceMotion])
 
   return (
     <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
@@ -40,7 +42,7 @@ export default function HeroContent() {
         </div>
       </motion.div>
 
-      <h1 className="mt-6">
+      <h1 className="mt-6" aria-live="off">
         <span key={index} className="block">
           {headings[index].map((line, i) => (
             <Shuffle
@@ -64,6 +66,10 @@ export default function HeroContent() {
           ))}
         </span>
       </h1>
+
+      <p className="mt-5 max-w-2xl text-base leading-relaxed text-on-surface-variant sm:text-lg">
+        Unifex Solutions is a software development company creating custom websites, web applications, and secure digital products for businesses.
+      </p>
 
       <motion.div
         className="flex flex-wrap items-center justify-center gap-4 pt-6 pb-24"

@@ -18,7 +18,7 @@ export function MouseFollower() {
 
   useEffect(() => {
     const cursor = cursorRef.current
-    if (!cursor || reducedMotion) return
+    if (!cursor || reducedMotion || window.matchMedia('(pointer: coarse)').matches) return
     document.body.dataset.customCursor = 'true'
     // Render immediately at the viewport center. This prevents an invisible
     // first frame while the browser is waiting for the first pointer event.

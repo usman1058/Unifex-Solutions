@@ -6,7 +6,7 @@ import NewsletterSignup from '@/components/home/newsletter-signup'
 
 export default function Footer() {
   return (
-    <footer className="w-full pt-24 pb-12 px-4 sm:px-6 md:px-12 flex flex-col gap-16 overflow-hidden bg-[#0a0a0a] border-t border-outline-variant/20">
+    <footer className="w-full pt-20 pb-12 px-4 sm:px-6 md:px-12 flex flex-col gap-14 overflow-hidden bg-[#0a0a0a] border-t border-outline-variant/30">
       <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row justify-between items-start gap-12 lg:gap-24">
         {/* Company Branding Column */}
         <div className="lg:w-1/2">
@@ -14,11 +14,11 @@ export default function Footer() {
             <div className="h-12 w-12 overflow-hidden rounded-xl border border-primary/40 bg-[#11120f] flex items-center justify-center">
               <img src="/logo.webp" alt="Unifex Solutions" className="h-full w-full object-cover" />
             </div>
-            <span className="text-3xl font-black font-headline tracking-tighter uppercase text-on-surface">
+            <span className="min-w-0 break-words text-2xl font-black font-headline tracking-tighter uppercase text-on-surface sm:text-3xl">
               UNIFEX SOLUTIONS
             </span>
           </div>
-          <p className="text-on-surface-variant font-label text-xs tracking-[0.2em] uppercase leading-relaxed max-w-md">
+          <p className="text-on-surface-variant font-label text-sm tracking-[0.08em] uppercase leading-relaxed max-w-md">
             EMPOWERING ENTERPRISES WITH HIGH-PERFORMANCE SOFTWARE, SECURE INFRASTRUCTURE, AND DIGITAL GROWTH SOLUTIONS.
           </p>
         </div>
@@ -28,25 +28,25 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
             <span className="text-xs uppercase tracking-[0.2em] font-headline text-primary font-bold">NAVIGATION</span>
             <Link
-              className="text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
+              className="inline-flex min-h-11 items-center text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
               href="/services"
             >
               SERVICES
             </Link>
             <Link
-              className="text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
+              className="inline-flex min-h-11 items-center text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
               href="/portfolio"
             >
               WORK
             </Link>
             <Link
-              className="text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
+              className="inline-flex min-h-11 items-center text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
               href="/pricing"
             >
               PRICING
             </Link>
             <Link
-              className="text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
+              className="inline-flex min-h-11 items-center text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
               href="/order"
             >
               START A PROJECT
@@ -55,41 +55,48 @@ export default function Footer() {
               className="text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
               href="/blog"
             >
-              JOURNAL
+              BLOGS
             </Link>
           </div>
 
           <div className="flex flex-col gap-4">
             <span className="text-xs uppercase tracking-[0.2em] font-headline text-primary font-bold">LEGAL & SAFETY</span>
             <Link
-              className="text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
+              className="inline-flex min-h-11 items-center text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
               href="/privacy"
             >
               PRIVACY POLICY
             </Link>
             <Link
-              className="text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
+              className="inline-flex min-h-11 items-center text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
               href="/terms"
             >
               TERMS OF SERVICE
             </Link>
             <Link
-              className="text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
+              className="inline-flex min-h-11 items-center text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
               href="/cookies"
             >
               COOKIE POLICY
             </Link>
             <Link
-              className="text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
+              className="inline-flex min-h-11 items-center text-on-surface-variant hover:text-primary transition-colors font-label text-xs tracking-wider uppercase"
               href="/faq"
             >
               FAQ
             </Link>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event('unifex:open-consent'))}
+              className="min-h-11 text-left text-on-surface-variant font-label text-xs tracking-wider uppercase transition-colors hover:text-primary"
+            >
+              Privacy choices
+            </button>
           </div>
 
           <div className="flex flex-col gap-4 col-span-2 sm:col-span-1">
             <span className="text-xs uppercase tracking-[0.2em] font-headline text-primary font-bold">CONTACT</span>
-            <a href="mailto:info@unifexsolutions.com" className="break-all text-on-surface-variant font-label text-xs tracking-wider uppercase leading-relaxed hover:text-primary">
+            <a href="mailto:info@unifexsolutions.com" className="inline-flex min-h-11 max-w-full items-center break-all text-on-surface-variant font-label text-xs tracking-wider uppercase leading-relaxed hover:text-primary">
               INFO@UNIFEXSOLUTIONS.COM
             </a>
           </div>

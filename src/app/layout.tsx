@@ -1,12 +1,8 @@
 import type { Metadata } from "next";
-import Script from 'next/script'
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as SonnerToaster } from "sonner";
 import { MouseFollower } from "@/components/ui/mouse-follower";
 import AmbientCursorGlow from '@/components/ui/ambient-cursor-glow'
 import SmoothScroll from '@/components/ui/smooth-scroll'
-import ConsentBanner from '@/components/privacy/consent-banner'
 import RootLayoutClient from '@/components/layout/root-layout-client'
 import { buildMetadata, siteDescription, siteName, siteUrl } from '@/lib/seo'
 
@@ -34,9 +30,17 @@ const structuredData = {
       '@type': 'Organization',
       '@id': `${siteUrl}/#organization`,
       name: siteName,
+      alternateName: 'Unifex',
       url: siteUrl,
       logo: { '@type': 'ImageObject', url: `${siteUrl}/logo.webp`, width: 677, height: 667 },
       description: siteDescription,
+      knowsAbout: [
+        'Website development',
+        'Custom software development',
+        'Web applications',
+        'CRM integration',
+        'Application security',
+      ],
       email: 'info@unifexsolutions.com',
       contactPoint: {
         '@type': 'ContactPoint',
@@ -49,6 +53,7 @@ const structuredData = {
       '@type': 'WebSite',
       '@id': `${siteUrl}/#website`,
       name: siteName,
+      alternateName: 'Unifex',
       url: siteUrl,
       publisher: { '@id': `${siteUrl}/#organization` },
     },
@@ -62,14 +67,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9704794346591870"
-          crossOrigin="anonymous"
-          strategy="beforeInteractive"
-        />
-      </head>
       <body
         className="antialiased bg-background text-foreground min-h-screen flex flex-col"
       >
@@ -79,7 +76,6 @@ export default function RootLayout({
         <RootLayoutClient>
           {children}
         </RootLayoutClient>
-        <SonnerToaster position="top-right" richColors closeButton />
         <MouseFollower />
       </body>
     </html>

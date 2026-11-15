@@ -31,8 +31,8 @@ const sections = [
   {
     title: 'Cookies, advertising, and Google services',
     paragraphs: [
-      'The website currently uses local storage to remember your optional privacy choice and may use cookies needed for essential functions. No analytics or advertising tags are currently loaded. If those services are added, this policy and the consent controls will be updated before they are enabled.',
-      'If Google AdSense or another advertising product is enabled, Google and its advertising partners may place and read cookies on your browser, use web beacons or IP addresses, and process information about your visits to this website or other websites to measure or personalize advertising. Third-party vendors, including Google, may serve ads based on a user\'s prior visits to this website or other websites.',
+      'The website stores your optional privacy choice in local storage. The Google AdSense script is limited to blog detail pages and is loaded only after you accept optional advertising. If you reject, the script is not loaded on that browser. We do not currently load analytics tags.',
+      'When Google AdSense is loaded, Google and its advertising partners may place and read cookies on your browser, use web beacons or IP addresses, and process information about your visits to this website or other websites to measure or personalize advertising. Third-party vendors, including Google, may serve ads based on a user\'s prior visits to this website or other websites.',
       'You can manage personalized advertising through Google Ads Settings at https://www.google.com/settings/ads and learn about broader third-party advertising choices at https://www.aboutads.info/choices/.',
       'The current site banner is a basic preference control, not a Google-certified consent management platform. Before serving personalized Google ads to users in the European Economic Area, the United Kingdom, or Switzerland, configure a Google-certified CMP integrated with the IAB Transparency and Consent Framework and obtain the required consent. Applicable privacy laws may require additional controls for other advertising modes.',
     ],

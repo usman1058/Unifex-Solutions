@@ -44,7 +44,7 @@ const techLogos = [
 ]
 
 export const revalidate = 60
-export const metadata = buildMetadata({ title: 'Unifex Solutions | Software & Cybersecurity', description: 'We build secure software, digital products, and high-performance web experiences for ambitious teams.' })
+export const metadata = buildMetadata({ title: 'Unifex Solutions | Website & Software Development', description: 'Unifex Solutions builds custom websites, web applications, and secure software for businesses, from first brief through launch.' })
 
 // Fallback services in case DB returns fewer than 5
 const defaultServices = [

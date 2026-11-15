@@ -35,11 +35,11 @@ export default async function FAQPage() {
               <span className="text-[10px] font-black tracking-[0.6em] text-primary mb-8 uppercase italic block">
                 FAQ // Need Help?
               </span>
-              <h1 className="font-headline text-5xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-12 uppercase text-on-surface">
+              <h1 className="font-headline text-4xl sm:text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-12 uppercase text-on-surface">
                 FREQUENTLY <br />
                 <span className="text-on-surface/50 italic">ASKED QUESTIONS.</span>
               </h1>
-              <p className="text-lg md:text-2xl font-medium text-on-surface/80 max-w-4xl leading-relaxed uppercase tracking-tight border-l-4 border-primary/20 pl-8 md:pl-10">
+              <p className="text-base sm:text-lg md:text-2xl font-medium text-on-surface/85 max-w-4xl leading-relaxed border-l-4 border-primary/35 pl-5 sm:pl-8 md:pl-10">
                 EVERYTHING YOU NEED TO KNOW ABOUT HOW WE WORK, OUR PROCESS, AND WHAT TO EXPECT.
               </p>
             </div>
@@ -53,7 +53,7 @@ export default async function FAQPage() {
           {Object.keys(groupedFaqs).length === 0 ? (
             <div className="border border-outline-variant/20 p-16 text-center bg-surface-container-low">
               <h3 className="font-headline text-2xl font-black uppercase text-on-surface/40 mb-3">NO FAQs LISTED YET</h3>
-              <p className="text-xs font-label tracking-widest text-on-surface/30 uppercase">Operational documentation is being compiled.</p>
+              <p className="text-base font-label text-on-surface/75">Operational documentation is being compiled.</p>
             </div>
           ) : (
             <div className="space-y-24">
@@ -77,7 +77,7 @@ export default async function FAQPage() {
                             <h3 className="text-xl md:text-2xl font-headline font-black tracking-tighter uppercase mb-6 text-on-surface group-hover:text-primary transition-colors">
                               {faq.question}
                             </h3>
-                            <p className="text-xs font-medium text-on-surface/70 leading-relaxed uppercase tracking-tight">
+                            <p className="text-base font-medium text-on-surface/80 leading-relaxed tracking-normal">
                               {faq.answer}
                             </p>
                           </div>

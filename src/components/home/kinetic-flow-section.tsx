@@ -111,10 +111,10 @@ export default function KineticFlowSection() {
   const ActiveIcon = activeStep.icon
 
   return (
-    <section ref={sectionRef} className="relative border-t border-outline-variant/15 bg-[#0a0a0a]" style={{ minHeight: '400vh' }}>
+    <section ref={sectionRef} className="relative min-h-screen border-t border-outline-variant/15 bg-[#0a0a0a] md:min-h-[400vh]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_25%,rgba(255,184,123,0.08),transparent_25%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_30%,transparent_70%,rgba(255,255,255,0.02))]" />
 
-      <div className="sticky top-0 flex min-h-screen items-center overflow-hidden">
+      <div className="relative flex items-center overflow-hidden py-8 md:sticky md:top-0 md:min-h-screen md:py-0">
         <div className="mx-auto grid w-full max-w-7xl gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 lg:px-12 lg:py-16">
           <div className="relative flex flex-col justify-center">
             <div className="mb-6 flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.35em] text-primary">

@@ -78,7 +78,7 @@ export default function OrderStatusPage() {
             <span className="text-[10px] font-black tracking-[0.6em] text-primary mb-8 uppercase italic block">
               Tracking // Order Status
             </span>
-            <h1 className="font-headline text-5xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-12 uppercase text-on-surface">
+            <h1 className="font-headline text-4xl sm:text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-12 uppercase text-on-surface">
               TRACK YOUR <br /> <span className="text-on-surface/50 italic">ENGAGEMENT.</span>
             </h1>
           </div>
@@ -94,13 +94,13 @@ export default function OrderStatusPage() {
               </h2>
 
               {status === 'notfound' && (
-                <div className="mb-10 border border-red-500/40 bg-red-500/10 p-5 flex items-center gap-4 text-red-400">
+                <div role="alert" aria-live="assertive" className="mb-10 border border-red-500/40 bg-red-500/10 p-5 flex items-center gap-4 text-red-300">
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />
                   <p className="text-xs font-black tracking-widest uppercase">No order found for that number and email.</p>
                 </div>
               )}
               {status === 'error' && (
-                <div className="mb-10 border border-red-500/40 bg-red-500/10 p-5 flex items-center gap-4 text-red-400">
+                <div role="alert" aria-live="assertive" className="mb-10 border border-red-500/40 bg-red-500/10 p-5 flex items-center gap-4 text-red-300">
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />
                   <p className="text-xs font-black tracking-widest uppercase">{error}</p>
                 </div>
@@ -108,7 +108,7 @@ export default function OrderStatusPage() {
 
               <form onSubmit={handleSubmit} className="space-y-10">
                 <div className="space-y-3">
-                  <label htmlFor="order-reference" className="text-[9px] font-black tracking-[0.3em] text-on-surface/70 uppercase italic block">Order Reference *</label>
+                  <label htmlFor="order-reference" className="text-xs font-black tracking-[0.12em] text-on-surface/90 uppercase block">Order Reference *</label>
                   <input
                     id="order-reference"
                     type="text"
@@ -117,11 +117,11 @@ export default function OrderStatusPage() {
                     value={orderNumber}
                     onChange={(e) => setOrderNumber(e.target.value.toUpperCase())}
                     placeholder="UF-2026-0001"
-                    className="w-full bg-transparent border-b-2 border-outline-variant/30 py-4 text-xs font-black tracking-[0.3em] focus:outline-none focus:border-primary transition-all uppercase placeholder:text-on-surface/20"
+                    className="w-full bg-transparent border-b-2 border-outline-variant/30 py-4 text-base font-medium tracking-normal focus:outline-none focus:border-primary transition-all placeholder:text-on-surface/55"
                   />
                 </div>
                 <div className="space-y-3">
-                  <label htmlFor="order-email" className="text-[9px] font-black tracking-[0.3em] text-on-surface/70 uppercase italic block">Email Used *</label>
+                  <label htmlFor="order-email" className="text-xs font-black tracking-[0.12em] text-on-surface/90 uppercase block">Email Used *</label>
                   <input
                     id="order-email"
                     type="email"
@@ -130,13 +130,13 @@ export default function OrderStatusPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@email.com"
-                    className="w-full bg-transparent border-b-2 border-outline-variant/30 py-4 text-xs font-black tracking-[0.3em] focus:outline-none focus:border-primary transition-all uppercase placeholder:text-on-surface/20"
+                    className="w-full bg-transparent border-b-2 border-outline-variant/30 py-4 text-base font-medium tracking-normal focus:outline-none focus:border-primary transition-all placeholder:text-on-surface/55"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={status === 'searching'}
-                  className="w-full flex justify-between items-center group py-6 border-t border-outline-variant/15"
+                  className="min-h-14 w-full flex justify-between items-center group py-6 border-t border-outline-variant/15"
                 >
                   <span className="text-2xl md:text-4xl font-headline font-black tracking-tighter uppercase italic group-hover:text-primary transition-colors leading-none">
                     {status === 'searching' ? 'SEARCHING...' : 'TRACK ORDER.'}
@@ -168,27 +168,27 @@ export default function OrderStatusPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                   <div className="border border-outline-variant/15 bg-background p-6">
-                    <p className="text-[9px] font-black tracking-[0.3em] text-on-surface/50 uppercase mb-3">Order Status</p>
+                    <p className="text-xs font-black tracking-[0.12em] text-on-surface/75 uppercase mb-3">Order Status</p>
                     <p className="text-sm font-black tracking-[0.2em] uppercase text-on-surface">{STATUS_LABELS[result.status] || result.status}</p>
                   </div>
                   <div className="border border-outline-variant/15 bg-background p-6">
-                    <p className="text-[9px] font-black tracking-[0.3em] text-on-surface/50 uppercase mb-3">Payment Status</p>
+                    <p className="text-xs font-black tracking-[0.12em] text-on-surface/75 uppercase mb-3">Payment Status</p>
                     <p className="text-sm font-black tracking-[0.2em] uppercase text-on-surface">{PAYMENT_LABELS[result.paymentStatus] || result.paymentStatus}</p>
                   </div>
                   <div className="border border-outline-variant/15 bg-background p-6">
-                    <p className="text-[9px] font-black tracking-[0.3em] text-on-surface/50 uppercase mb-3">Service</p>
+                    <p className="text-xs font-black tracking-[0.12em] text-on-surface/75 uppercase mb-3">Service</p>
                     <p className="text-sm font-black tracking-[0.2em] uppercase text-on-surface">{result.serviceTitle}</p>
                   </div>
                   <div className="border border-outline-variant/15 bg-background p-6">
-                    <p className="text-[9px] font-black tracking-[0.3em] text-on-surface/50 uppercase mb-3">Placed On</p>
+                    <p className="text-xs font-black tracking-[0.12em] text-on-surface/75 uppercase mb-3">Placed On</p>
                     <p className="text-sm font-black tracking-[0.2em] uppercase text-on-surface">{new Date(result.createdAt).toLocaleDateString()}</p>
                   </div>
                 </div>
 
                 {result.adminMessage && (
                   <div className="border border-primary/30 bg-primary/5 p-6 mb-12">
-                    <p className="text-[9px] font-black tracking-[0.3em] text-primary uppercase mb-3">Message From Our Team</p>
-                    <p className="text-xs font-medium text-on-surface/90 leading-relaxed">{result.adminMessage}</p>
+                    <p className="text-xs font-black tracking-[0.12em] text-primary uppercase mb-3">Message From Our Team</p>
+                    <p className="text-base font-medium text-on-surface leading-relaxed">{result.adminMessage}</p>
                   </div>
                 )}
 

@@ -155,7 +155,7 @@ export default function OrderFlow({ services, bankDetails = {}, initialServiceSl
     <div>
       <AnimatePresence>
         {transition && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[120] flex items-center justify-center bg-background/95 p-6 backdrop-blur-xl">
+          <motion.div role="status" aria-live="polite" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[120] flex items-center justify-center bg-background/95 p-6 backdrop-blur-xl">
             <div className="text-center"><motion.div animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }} className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full border border-primary/30 border-t-primary"><span className="font-headline text-2xl font-black text-primary">UF</span></motion.div><p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">{transition}</p><div className="mx-auto mt-5 h-px w-48 overflow-hidden bg-white/10"><motion.div initial={{ x: '-100%' }} animate={{ x: '0%' }} transition={{ duration: 0.52 }} className="h-full bg-primary" /></div></div>
           </motion.div>
         )}
@@ -244,7 +244,7 @@ export default function OrderFlow({ services, bankDetails = {}, initialServiceSl
                 </h2>
 
                 {error && (
-                  <div className="mb-10 border border-red-500/40 bg-red-500/10 p-5 flex items-center gap-4 text-red-400">
+                  <div role="alert" aria-live="assertive" className="mb-10 border border-red-500/40 bg-red-500/10 p-5 flex items-center gap-4 text-red-300">
                     <AlertCircle className="w-5 h-5 flex-shrink-0" />
                     <p className="text-xs font-black tracking-widest uppercase">{error}</p>
                   </div>
@@ -253,72 +253,82 @@ export default function OrderFlow({ services, bankDetails = {}, initialServiceSl
                 <div className="space-y-10">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-3">
-                      <label className="text-[9px] font-black tracking-[0.3em] text-on-surface/70 uppercase italic block">Your Name *</label>
+                      <label htmlFor="project-name" className="text-xs font-black tracking-[0.12em] text-on-surface/90 uppercase block">Your Name *</label>
                       <input
+                        id="project-name"
                         type="text"
                         required
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        autoComplete="name"
                         placeholder="Enter your name..."
-                        className="w-full bg-transparent border-b border-outline-variant/30 py-4 text-xs font-black tracking-[0.3em] focus:outline-none focus:border-primary transition-all uppercase placeholder:text-on-surface/20"
+                        className="w-full bg-transparent border-b border-outline-variant/45 py-4 text-base font-medium tracking-normal focus:outline-none focus:border-primary transition-all placeholder:text-on-surface/55"
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-[9px] font-black tracking-[0.3em] text-on-surface/70 uppercase italic block">Email *</label>
+                      <label htmlFor="project-email" className="text-xs font-black tracking-[0.12em] text-on-surface/90 uppercase block">Email *</label>
                       <input
+                        id="project-email"
                         type="email"
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        autoComplete="email"
                         placeholder="you@email.com"
-                        className="w-full bg-transparent border-b border-outline-variant/30 py-4 text-xs font-black tracking-[0.3em] focus:outline-none focus:border-primary transition-all uppercase placeholder:text-on-surface/20"
+                        className="w-full bg-transparent border-b border-outline-variant/45 py-4 text-base font-medium tracking-normal focus:outline-none focus:border-primary transition-all placeholder:text-on-surface/55"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-3">
-                      <label className="text-[9px] font-black tracking-[0.3em] text-on-surface/70 uppercase italic block">Phone (Optional)</label>
+                      <label htmlFor="project-phone" className="text-xs font-black tracking-[0.12em] text-on-surface/90 uppercase block">Phone (Optional)</label>
                       <input
+                        id="project-phone"
                         type="tel"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        autoComplete="tel"
                         placeholder="+44 0000 000000"
-                        className="w-full bg-transparent border-b border-outline-variant/30 py-4 text-xs font-black tracking-[0.3em] focus:outline-none focus:border-primary transition-all uppercase placeholder:text-on-surface/20"
+                        className="w-full bg-transparent border-b border-outline-variant/45 py-4 text-base font-medium tracking-normal focus:outline-none focus:border-primary transition-all placeholder:text-on-surface/55"
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-[9px] font-black tracking-[0.3em] text-on-surface/70 uppercase italic block">Company (Optional)</label>
+                      <label htmlFor="project-company" className="text-xs font-black tracking-[0.12em] text-on-surface/90 uppercase block">Company (Optional)</label>
                       <input
+                        id="project-company"
                         type="text"
                         value={formData.company}
                         onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                        autoComplete="organization"
                         placeholder="Company name..."
-                        className="w-full bg-transparent border-b border-outline-variant/30 py-4 text-xs font-black tracking-[0.3em] focus:outline-none focus:border-primary transition-all uppercase placeholder:text-on-surface/20"
+                        className="w-full bg-transparent border-b border-outline-variant/45 py-4 text-base font-medium tracking-normal focus:outline-none focus:border-primary transition-all placeholder:text-on-surface/55"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[9px] font-black tracking-[0.3em] text-on-surface/70 uppercase italic block">Estimated Budget (Optional)</label>
+                    <label htmlFor="project-budget" className="text-xs font-black tracking-[0.12em] text-on-surface/90 uppercase block">Estimated Budget (Optional)</label>
                     <input
+                      id="project-budget"
                       type="text"
                       value={formData.budget}
                       onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
                       placeholder="e.g. £5,000 - £10,000"
-                      className="w-full bg-transparent border-b border-outline-variant/30 py-4 text-xs font-black tracking-[0.3em] focus:outline-none focus:border-primary transition-all uppercase placeholder:text-on-surface/20"
+                      className="w-full bg-transparent border-b border-outline-variant/45 py-4 text-base font-medium tracking-normal focus:outline-none focus:border-primary transition-all placeholder:text-on-surface/55"
                     />
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[9px] font-black tracking-[0.3em] text-on-surface/70 uppercase italic block">Project Details *</label>
+                    <label htmlFor="project-details" className="text-xs font-black tracking-[0.12em] text-on-surface/90 uppercase block">Project Details *</label>
                     <textarea
+                      id="project-details"
                       required
                       rows={6}
                       value={formData.details}
                       onChange={(e) => setFormData({ ...formData, details: e.target.value })}
                       placeholder="Describe your project, requirements, timeline..."
-                      className="w-full bg-transparent border border-outline-variant/20 p-6 text-xs md:text-sm font-black tracking-[0.2em] focus:outline-none focus:border-primary transition-all uppercase placeholder:text-on-surface/20 resize-none"
+                      className="w-full bg-transparent border border-outline-variant/45 p-5 text-base font-medium leading-relaxed tracking-normal focus:outline-none focus:border-primary transition-all placeholder:text-on-surface/55 resize-y"
                     />
                   </div>
 
@@ -392,7 +402,7 @@ export default function OrderFlow({ services, bankDetails = {}, initialServiceSl
                 </h2>
 
                 {error && (
-                  <div className="mb-10 border border-red-500/40 bg-red-500/10 p-5 flex items-center gap-4 text-red-400">
+                  <div role="alert" aria-live="assertive" className="mb-10 border border-red-500/40 bg-red-500/10 p-5 flex items-center gap-4 text-red-300">
                     <AlertCircle className="w-5 h-5 flex-shrink-0" />
                     <p className="text-xs font-black tracking-widest uppercase">{error}</p>
                   </div>
@@ -448,14 +458,17 @@ export default function OrderFlow({ services, bankDetails = {}, initialServiceSl
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[9px] font-black tracking-[0.3em] text-on-surface/70 uppercase italic block">
+                    <p id="receipt-upload-label" className="text-xs font-black tracking-[0.12em] text-on-surface/90 uppercase">
                       Upload Transfer Receipt *
-                    </label>
-                    <label className="flex flex-col items-center justify-center gap-4 border-2 border-dashed border-outline-variant/30 hover:border-primary transition-colors cursor-pointer p-10 text-center">
+                    </p>
+                    <label htmlFor="receipt-upload" className="flex min-h-44 flex-col items-center justify-center gap-4 border-2 border-dashed border-outline-variant/40 hover:border-primary focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary transition-colors cursor-pointer p-8 text-center">
                       <input
+                        id="receipt-upload"
                         type="file"
                         accept=".png,.jpg,.jpeg,.webp,.gif,.pdf"
-                        className="hidden"
+                        aria-labelledby="receipt-upload-label"
+                        aria-describedby="receipt-upload-help"
+                        className="sr-only"
                         onChange={(e) => {
                           const file = e.target.files?.[0]
                           if (file) handleUpload(file)
@@ -473,13 +486,13 @@ export default function OrderFlow({ services, bankDetails = {}, initialServiceSl
                           <p className="text-xs font-black tracking-widest uppercase text-primary">Uploading…</p>
                         ) : receiptFile ? (
                           <>
-                            <p className="text-xs font-black tracking-widest uppercase text-on-surface">{receiptFile.name}</p>
-                            <p className="text-[9px] tracking-widest uppercase text-on-surface/50 mt-1">Click to replace</p>
+                            <p className="text-base font-semibold text-on-surface">{receiptFile.name}</p>
+                            <p id="receipt-upload-help" className="mt-1 text-sm text-on-surface/75">Select a new file to replace this receipt.</p>
                           </>
                         ) : (
                           <>
-                            <p className="text-xs font-black tracking-widest uppercase text-on-surface">Click to upload receipt</p>
-                            <p className="text-[9px] tracking-widest uppercase text-on-surface/50 mt-1">PNG, JPG, PDF · Max 10MB</p>
+                            <p className="text-base font-semibold text-on-surface">Choose a transfer receipt</p>
+                            <p id="receipt-upload-help" className="mt-1 text-sm text-on-surface/75">PNG, JPG, WebP, GIF, or PDF. Maximum size: 10 MB.</p>
                           </>
                         )}
                       </div>

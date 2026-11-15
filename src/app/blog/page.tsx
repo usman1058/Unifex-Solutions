@@ -4,7 +4,7 @@ import { buildMetadata } from '@/lib/seo'
 import { isPlaceholderBlogContent } from '@/lib/published-content'
 import { editorialPosts } from '@/lib/editorial-posts'
 
-export const metadata = buildMetadata({ title: 'Technology & Digital Growth Blog | The Unifex Journal', description: 'Practical insights on software development, cybersecurity, digital products, SEO, and sustainable online growth.', path: '/blog' })
+export const metadata = buildMetadata({ title: 'Technology & Digital Growth Blog | Unifex Solutions', description: 'Practical insights on software development, cybersecurity, digital products, SEO, and sustainable online growth.', path: '/blog' })
 
 export const revalidate = 60
 

@@ -5,6 +5,7 @@ import Navbar from '@/components/layout/navbar'
 import Footer from '@/components/layout/footer'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as SonnerToaster } from 'sonner'
+import { MotionConfig } from 'framer-motion'
 import ConsentBanner from '@/components/privacy/consent-banner'
 import { useLayoutEffect } from 'react'
 
@@ -21,6 +22,7 @@ export default function RootLayoutClient({ children }: { children: React.ReactNo
   }, [pathname])
 
   return (
+    <MotionConfig reducedMotion="user">
     <>
       <a href="#main-content" className="skip-link">Skip to main content</a>
       {!isAdminRoute && <Navbar />}
@@ -32,5 +34,6 @@ export default function RootLayoutClient({ children }: { children: React.ReactNo
       <SonnerToaster position="top-right" richColors closeButton />
       <ConsentBanner />
     </>
+    </MotionConfig>
   )
 }

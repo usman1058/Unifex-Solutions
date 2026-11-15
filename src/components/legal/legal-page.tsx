@@ -26,15 +26,15 @@ export default function LegalPage({
         <header className="border-b border-primary/20 pb-12">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary">{eyebrow}</p>
           <h1 className="mt-6 max-w-4xl font-headline text-5xl font-black uppercase leading-[0.9] tracking-[-0.07em] sm:text-7xl lg:text-8xl">{title}</h1>
-          <p className="mt-8 max-w-3xl text-base leading-8 text-on-surface/70 sm:text-lg">{intro}</p>
-          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.2em] text-on-surface/45">Last updated: {updated}</p>
+          <p className="mt-8 max-w-3xl text-base leading-8 text-on-surface/85 sm:text-lg">{intro}</p>
+          <p className="mt-8 text-sm font-semibold uppercase tracking-[0.12em] text-on-surface/70">Last updated: {updated}</p>
         </header>
 
         <div className="divide-y divide-outline-variant/15">
           {sections.map((section, index) => (
             <section key={section.title} className="grid gap-6 py-12 md:grid-cols-[0.3fr_0.7fr] md:gap-12">
               <h2 className="text-sm font-bold uppercase tracking-[0.18em] text-primary">{String(index + 1).padStart(2, '0')} / {section.title}</h2>
-              <div className="space-y-5 text-sm leading-8 text-on-surface/70 sm:text-base">
+              <div className="space-y-5 text-base leading-8 text-on-surface/85">
                 {section.paragraphs?.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
                 {section.links?.map((link) => (
                   <p key={link.href}>

@@ -7,7 +7,7 @@ import ServicesHeroArtifact from '@/components/services/services-hero-artifact'
 import { buildMetadata } from '@/lib/seo'
 import { getServiceCopy } from '@/lib/service-copy'
 
-export const metadata = buildMetadata({ title: 'Software Development & Cybersecurity Services | Unifex', description: 'Explore Unifex services across software engineering, cybersecurity, digital products, websites, and growth systems.', path: '/services' })
+export const metadata = buildMetadata({ title: 'Website Development & Software Services | Unifex Solutions', description: 'Explore website development, custom software, web applications, CRM integration, and security assessment services from Unifex Solutions.', path: '/services' })
 
 export const revalidate = 60
 
@@ -42,7 +42,7 @@ export default async function ServicesPage() {
   return (
     <main className="min-h-screen overflow-hidden bg-background text-on-surface pt-24">
       <section className="relative border-b border-outline-variant/15 py-24 md:py-36">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_82%_20%,rgba(213,255,0,0.14),transparent_30%),linear-gradient(115deg,transparent_0%,rgba(255,255,255,0.025)_48%,transparent_49%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_82%_20%,rgba(255,184,123,0.14),transparent_30%),linear-gradient(115deg,transparent_0%,rgba(255,255,255,0.025)_48%,transparent_49%)]" />
         <div className="container relative z-10 mx-auto px-6 md:px-12">
           <FadeIn>
             <div className="mb-10 flex items-center justify-between gap-6 text-[10px] font-black uppercase tracking-[0.45em] text-primary">
@@ -110,9 +110,9 @@ export default async function ServicesPage() {
                 return (
                   <Link key={service.id} href={`/services/${service.slug}`} className="group relative flex min-h-[390px] flex-col justify-between overflow-hidden border border-outline-variant/15 bg-surface p-7 transition-all duration-500 hover:-translate-y-2 hover:border-primary hover:bg-surface-container-high md:p-10">
                     <div className="mb-7"><ServiceVisual title={service.title} imageUrl={service.imageUrl} index={index + 1} compact /></div>
-                    <div className="absolute -right-8 -top-10 font-headline text-[13rem] font-black italic leading-none text-on-surface/[0.025] transition-colors group-hover:text-primary/[0.08]">{String(index + 2).padStart(2, '0')}</div>
+                    <div aria-hidden="true" className="pointer-events-none absolute -right-4 -top-5 font-headline text-[7rem] font-black italic leading-none text-on-surface/[0.025] transition-colors group-hover:text-primary/[0.08] sm:-right-8 sm:-top-10 sm:text-[13rem]">{String(index + 2).padStart(2, '0')}</div>
                     <div className="relative z-10 flex items-start justify-between"><span className="text-[10px] font-black uppercase tracking-[0.35em] text-primary">0{index + 2} / Capability</span><ArrowUpRight className="h-5 w-5 transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-primary" /></div>
-                    <div className="relative z-10"><h3 className="mb-5 max-w-md font-headline text-4xl font-black uppercase leading-[0.9] tracking-[-0.06em] transition-colors group-hover:text-primary md:text-5xl">{service.title}</h3><p className="max-w-md text-sm leading-relaxed text-on-surface/60">{service.description}</p></div>
+                    <div className="relative z-10"><h3 className="mb-5 max-w-md break-words font-headline text-3xl font-black uppercase leading-[0.95] tracking-[-0.06em] transition-colors group-hover:text-primary sm:text-4xl md:text-5xl">{service.title}</h3><p className="max-w-md text-base leading-relaxed text-on-surface/80">{service.description}</p></div>
                     <div className="relative z-10 flex items-end justify-between gap-5 border-t border-outline-variant/15 pt-6"><div><span className="mb-2 block text-[9px] font-black uppercase tracking-[0.25em] text-on-surface/40">From / scope</span><span className="font-headline text-xl font-black uppercase">{pricingLabel(service.pricing)}</span></div><span className="text-right text-[9px] font-black uppercase tracking-[0.2em] text-on-surface/40">{features.length || 0} deliverables<br />view details</span></div>
                   </Link>
                 )
@@ -126,7 +126,7 @@ export default async function ServicesPage() {
         <div className="container mx-auto grid gap-12 px-6 md:px-12 lg:grid-cols-[0.8fr_1.2fr]">
           <div><p className="mb-4 text-[10px] font-black uppercase tracking-[0.4em] text-primary">The engagement protocol</p><h2 className="font-headline text-5xl font-black uppercase leading-[0.88] tracking-[-0.07em] md:text-7xl">No mystery.<br /><span className="text-on-surface/30">Just momentum.</span></h2></div>
           <div className="grid gap-px bg-outline-variant/15 sm:grid-cols-3">
-            {[['01', 'Apply', 'Choose a capability and send the context that matters.'], ['02', 'Get selected', 'We review the brief, confirm fit, and align the scope.'], ['03', 'Activate', 'Upload your receipt and move into production with a reference number.']].map(([number, title, copy]) => <div key={number} className="bg-background p-7"><span className="mb-12 block text-xs font-black text-primary">{number}</span><h3 className="mb-4 font-headline text-2xl font-black uppercase tracking-tight">{title}</h3><p className="text-sm leading-relaxed text-on-surface/55">{copy}</p></div>)}
+            {[['01', 'Apply', 'Choose a capability and send the context that matters.'], ['02', 'Get selected', 'We review the brief, confirm fit, and align the scope.'], ['03', 'Activate', 'Upload your receipt and move into production with a reference number.']].map(([number, title, copy]) => <div key={number} className="bg-background p-7"><span className="mb-12 block text-xs font-black text-primary">{number}</span><h3 className="mb-4 font-headline text-2xl font-black uppercase tracking-tight">{title}</h3><p className="text-base leading-relaxed text-on-surface/80">{copy}</p></div>)}
           </div>
         </div>
       </section>
